@@ -1,0 +1,25 @@
+@import url('https://fonts.googleapis.com/css2?family=Hind:wght@300;400&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: 'Hind', sans-serif;
+}
+
+:root {
+  --primary: #1DB954;
+  --p-hover: #1ED760;
+  --secondary: #A0C3D2;
+  --danger: #EB1E32;
+
+  --dark: #1C1C1C;
+  --dark-2: #1C273A;
+  --neutral: #C1C3C6;
+
+  --black: #000;
+  --white: #FFF;
+}
