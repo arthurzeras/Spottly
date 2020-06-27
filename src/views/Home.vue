@@ -1,7 +1,34 @@
 <template>
-  <div class="home">
-    <h1>Welcome, Spottly</h1>
-  </div>
+  <section class="home">
+    <aside class="home__image-container">
+      <img
+        class="home__image"
+        alt="headset image"
+        src="https://images.unsplash.com/photo-1495305379050-64540d6ee95d?"
+      />
+    </aside>
+
+    <article class="home__content">
+      <h2>Olá!</h2>
+
+      <p>Você gosta de ver as estatísticas de suas músicas ouvidas?</p>
+
+      <p>
+        Eu sou o Spottly, meu objetivo é usar suas informações de músicas ouvidas no Spotify e
+        postar automaticamente no seu twitter para você!
+      </p>
+
+      <div class="home__buttons">
+        <button>
+          Vamos lá!
+        </button>
+
+        <button>
+          Já tenho conta
+        </button>
+      </div>
+    </article>
+  </section>
 </template>
 
 <script>
@@ -9,3 +36,75 @@ export default {
   name: 'Home',
 };
 </script>
+
+<style lang="scss">
+$off-container-padding: 50px;
+
+.home {
+  display: flex;
+  margin: 50px;
+  align-items: center;
+  width: calc(100% - 100px);
+  height: calc(100vh - 100px);
+  border: 2px dotted var(--dark);
+
+  &__image-container {
+    flex: 0 0 30%;
+    padding: 0 30px 0 $off-container-padding;
+  }
+
+  &__image {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.8);
+  }
+
+  &__content {
+    padding: 0 $off-container-padding 0 30px;
+
+    h2 {
+      margin: 0;
+      padding: 0;
+      font-size: 3rem;
+    }
+
+    p:nth-child(2) {
+      font-size: 1.5rem;
+    }
+  }
+
+  &__buttons {
+    margin-top: 40px;
+    text-align: center;
+
+    button {
+      border: none;
+      margin: 0 20px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.4s;
+      padding: 5px 50px;
+      border-radius: 20px;
+      text-transform: uppercase;
+
+      &:first-child {
+        color: var(--white);
+        background-color: var(--primary);
+
+        &:hover {
+          background-color: var(--p-hover);
+        }
+      }
+
+      &:last-child {
+        border: 1px solid var(--dark);
+        background-color: var(--light);
+
+        &:hover {
+          background-color: var(--white);
+        }
+      }
+    }
+  }
+}
+</style>
