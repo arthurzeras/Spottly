@@ -13,10 +13,18 @@
         @click="dropdownVisible = !dropdownVisible"
       />
 
+      <div class="header__user-info">
+        <span :title="user.displayName">Olá, {{ nameTruncated }}</span>
+
+        <button class="header__user-logout" title="Sair">
+          <span class="fa fa-power-off" />
+        </button>
+      </div>
+
       <div class="header__user-dropdown" v-show="dropdownVisible">
         <div class="header__user-name">{{ nameTruncated }}</div>
 
-        <button class="header__user-logout">
+        <button class="header__user-logout header__user-logout-mobile">
           <span class="fa fa-power-off" />
           Sair
         </button>
@@ -55,7 +63,7 @@ export default {
       const { target } = event;
       const el = this.$refs.userElement;
 
-      if (target !== el && !el.contains(target)) {
+      if (target !== el && !!el && !el.contains(target)) {
         this.dropdownVisible = false;
       }
     },
@@ -107,6 +115,10 @@ export default {
       border-radius: 50%;
     }
 
+    &-info {
+      margin: 0 0 0 10px;
+    }
+
     &-dropdown {
       top: 60px;
       z-index: 10;
@@ -138,14 +150,31 @@ export default {
     }
 
     &-logout {
+      border: none;
+      outline: none;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: 0.4s;
       margin-top: 10px;
       padding: 2px 15px;
-      font-size: 1rem;
       border-radius: 4px;
-      color: var(--white);
       background-color: transparent;
-      border: 1px solid var(--white);
+
+      &-mobile {
+        color: var(--white);
+        border: 1px solid var(--white);
+      }
+
+      &:hover {
+        color: var(--primary);
+      }
     }
+  }
+}
+
+@media (max-width: 576px) {
+  .header__user-info {
+    display: none;
   }
 }
 </style>
