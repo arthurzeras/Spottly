@@ -18,8 +18,8 @@
         postar automaticamente no seu twitter para você!
       </p>
 
-      <div class="home__buttons">
-        <button @click="login()">
+      <div class="home__button-container">
+        <button class="home__button" @click="login()">
           Entrar com meu twitter
           <span class="fab fa-twitter" />
         </button>
@@ -50,6 +50,7 @@ export default {
 
         localStorage.setItem('credentials', credentials);
       } catch (error) {
+        // TODO error
         // eslint-disable-next-line no-console
         console.error(error);
       }
@@ -62,8 +63,8 @@ export default {
 $off-container-padding: 50px;
 
 .home {
-  display: flex;
   margin: 50px;
+  display: flex;
   align-items: center;
   width: calc(100% - 100px);
   height: calc(100vh - 100px);
@@ -93,29 +94,29 @@ $off-container-padding: 50px;
     }
   }
 
-  &__buttons {
+  &__button-container {
     margin-top: 40px;
     text-align: center;
+  }
 
-    button {
-      margin: 0 20px;
-      line-height: 1;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: 0.4s;
-      padding: 10px 50px;
-      border-radius: 20px;
-      border: 1px solid var(--dark);
-      background-color: var(--light);
+  &__button {
+    margin: 0 20px;
+    line-height: 1;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: 0.4s;
+    padding: 10px 50px;
+    border-radius: 20px;
+    border: 1px solid var(--dark);
+    background-color: var(--light);
 
-      &:hover {
-        background-color: var(--white);
-      }
+    &:hover {
+      background-color: var(--white);
+    }
 
-      .fa-twitter {
-        margin-left: 5px;
-        color: #1a91da;
-      }
+    .fa-twitter {
+      margin-left: 5px;
+      color: #1a91da;
     }
   }
 }
