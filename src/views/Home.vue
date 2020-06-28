@@ -121,7 +121,7 @@ $off-container-padding: 50px;
   }
 }
 
-@media (max-width: 576px) {
+@media (max-width: 768px) {
   .home {
     margin: 15px;
     flex-direction: column;
@@ -141,7 +141,32 @@ $off-container-padding: 50px;
     &__button {
       margin: 0;
       width: 100%;
-      display: block;
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .home {
+    &__content {
+      h2 {
+        font-size: 2rem;
+      }
+
+      p:nth-child(2) {
+        font-size: 1rem;
+      }
+
+      p:nth-child(3) {
+        font-size: 0.8rem;
+      }
+    }
+
+    &__button-container {
+      margin-top: 20px;
+    }
+
+    &__button {
+      font-size: 0.9rem;
     }
   }
 }
