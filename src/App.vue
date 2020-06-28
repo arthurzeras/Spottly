@@ -31,6 +31,12 @@ export default {
           },
         });
 
+        const spotifyToken = localStorage.getItem('spotify_token');
+
+        if (spotifyToken) {
+          this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(spotifyToken);
+        }
+
         if (this.$route.name === 'Home') {
           this.$router.push({ name: 'Dashboard' });
         }
@@ -43,7 +49,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['ACTION_SET_USER']),
+    ...mapActions(['ACTION_SET_USER', 'ACTION_SET_SPOTIFY_ACCESS_TOKEN']),
   },
 };
 </script>

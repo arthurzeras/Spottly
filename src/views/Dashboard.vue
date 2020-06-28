@@ -1,24 +1,53 @@
 <template>
   <section class="dashboard">
-    <h2>Olá, {{ user.displayName }}!</h2>
+    <article class="dashboard__connect-info" v-if="!isConnectedOnSpotify">
+      <h2>Olá, {{ user.displayName }}!</h2>
 
-    <p>Conecte sua conta do Spotify ao Spottly para iniciar</p>
+      <p>Conecte sua conta do Spotify ao Spottly para iniciar</p>
 
-    <button class="dashboard__button" @click="spotifyAuth()">
-      Conectar ao Spotify
-      <span class="fab fa-spotify" />
-    </button>
+      <button class="dashboard__button" @click="spotifyAuth()">
+        Conectar ao Spotify
+        <span class="fab fa-spotify" />
+      </button>
+    </article>
+
+    <article class="dashboard__top-artists" v-else>
+      <h3 class="dashboard__top-artists-title">Meus top artistas das últimas semanas</h3>
+
+      <div class="dashboard__top-artists-list">
+        <div class="dashboard__top-artists-item" v-for="artist in artists" :key="artist.id">
+          <img
+            :alt="artist.name"
+            class="dashboard__top-artists-image"
+            :src="getSmallestImage(artist.images)"
+          />
+
+          <span class="dashboard__top-artists-name">{{ artist.name }}</span>
+        </div>
+      </div>
+    </article>
   </section>
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import services from '@/services';
+import { mapState, mapGetters } from 'vuex';
 
 export default {
   name: 'Dashboard',
 
+  data: () => ({
+    artists: [],
+    range: 'short_term',
+  }),
+
+  mounted() {
+    this.getTopArtists();
+  },
+
   computed: {
     ...mapState(['user']),
+    ...mapGetters(['isConnectedOnSpotify']),
   },
 
   methods: {
@@ -33,6 +62,33 @@ export default {
 
       window.location.href = redirectURL;
     },
+
+    async getTopArtists() {
+      if (!this.isConnectedOnSpotify) return;
+
+      try {
+        const params = {
+          limit: 10,
+          time_range: this.range,
+        };
+
+        const { data } = await services.spotify.topArtists(params);
+
+        this.artists = data.items;
+      } catch (error) {
+        console.error(error.status);
+        // localStorage.removeItem('spotify_token');
+      }
+    },
+
+    getSmallestImage(images) {
+      const { url } = images.reduce(
+        (smallest, current) => (smallest.width > current.width ? current : smallest),
+        { width: 1000 }
+      );
+
+      return url;
+    },
   },
 };
 </script>
@@ -41,12 +97,14 @@ export default {
 .dashboard {
   width: 100%;
   display: flex;
-  padding: 0 30px;
-  text-align: center;
   align-items: center;
-  flex-direction: column;
   justify-content: center;
   height: calc(100vh - 50px);
+
+  &__connect-info {
+    padding: 0 30px;
+    text-align: center;
+  }
 
   &__button {
     border: none;
@@ -67,6 +125,34 @@ export default {
     .fa-spotify {
       margin-left: 5px;
       color: var(--dark);
+    }
+  }
+
+  &__top-artists {
+    &-title {
+      margin: 0;
+      padding: 0 5px;
+    }
+
+    &-list {
+      width: 100vw;
+      display: flex;
+      overflow-x: auto;
+    }
+
+    &-item {
+      padding: 0 5px 10px 5px;
+    }
+
+    &-image {
+      height: 100px;
+      border-radius: 5px;
+    }
+
+    &-name {
+      display: block;
+      line-height: 1.2;
+      font-size: 0.8rem;
     }
   }
 }

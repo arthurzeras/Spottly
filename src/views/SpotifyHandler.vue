@@ -6,6 +6,7 @@
 
 <script>
 import services from '@/services';
+import { mapActions } from 'vuex';
 
 export default {
   name: 'SpotifyHandler',
@@ -15,6 +16,8 @@ export default {
   },
 
   methods: {
+    ...mapActions(['ACTION_SET_SPOTIFY_ACCESS_TOKEN']),
+
     async getSpotifyTokens() {
       try {
         const { code } = this.$route.query;
@@ -29,6 +32,7 @@ export default {
           const { data } = await services.spotify.authorize(params);
 
           localStorage.setItem('spotify_token', data.access_token);
+          this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(data.access_token);
 
           this.$router.push({ name: 'Dashboard' });
         }
