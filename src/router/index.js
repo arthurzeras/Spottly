@@ -29,7 +29,9 @@ const router = new VueRouter({
 });
 
 router.beforeEach((to, from, next) => {
-  if (to.name === 'Dashboard' && !store.getters.isLogged) {
+  const dontCameFromCallback = from?.name !== 'SpotifyCallback';
+
+  if (to.name === 'Dashboard' && !store.getters.isLogged && dontCameFromCallback) {
     return next({ name: 'Home' });
   }
 
