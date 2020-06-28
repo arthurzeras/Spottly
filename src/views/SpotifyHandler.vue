@@ -33,6 +33,7 @@ export default {
 
           localStorage.setItem('spotify_token', data.access_token);
           localStorage.setItem('spotify_refresh', data.refresh_token);
+
           this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(data.access_token);
 
           this.$router.push({ name: 'Dashboard' });

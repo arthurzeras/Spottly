@@ -76,9 +76,9 @@ export default {
 
         this.artists = data.items;
       } catch (error) {
+        // TODO error
+        // eslint-disable-next-line no-console
         console.error(error);
-
-        // localStorage.removeItem('spotify_token');
       }
     },
 
@@ -154,6 +154,28 @@ export default {
       display: block;
       line-height: 1.2;
       font-size: 0.8rem;
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .dashboard {
+    &__top-artists {
+      &-title {
+        padding: 0 15px;
+        font-size: 1.5rem;
+      }
+
+      &-item {
+        flex: 0 0 10%;
+        padding: 0 15px 10px 15px;
+      }
+
+      &-image {
+        width: 100%;
+        height: auto;
+        border-radius: 5px;
+      }
     }
   }
 }
