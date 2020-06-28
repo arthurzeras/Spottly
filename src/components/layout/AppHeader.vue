@@ -16,7 +16,7 @@
       <div class="header__user-info">
         <span :title="user.displayName">Olá, {{ nameTruncated }}</span>
 
-        <button class="header__user-logout" title="Sair">
+        <button class="header__user-logout" title="Sair" @click="logout()">
           <span class="fa fa-power-off" />
         </button>
       </div>
@@ -24,7 +24,7 @@
       <div class="header__user-dropdown" v-show="dropdownVisible">
         <div class="header__user-name">{{ nameTruncated }}</div>
 
-        <button class="header__user-logout header__user-logout-mobile">
+        <button class="header__user-logout header__user-logout-mobile" @click="logout()">
           <span class="fa fa-power-off" />
           Sair
         </button>
@@ -66,6 +66,12 @@ export default {
       if (target !== el && !!el && !el.contains(target)) {
         this.dropdownVisible = false;
       }
+    },
+
+    async logout() {
+      await this.$firebase.auth().signOut();
+
+      this.$router.push({ name: 'Home' });
     },
   },
 
