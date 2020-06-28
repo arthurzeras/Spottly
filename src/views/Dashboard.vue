@@ -76,7 +76,8 @@ export default {
 
         this.artists = data.items;
       } catch (error) {
-        console.error(error.status);
+        console.error(error);
+
         // localStorage.removeItem('spotify_token');
       }
     },

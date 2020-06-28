@@ -1,8 +1,5 @@
-import axios from 'axios';
-
-const spotifyAuthorization = window.btoa(
-  `${process.env.VUE_APP_SPOTIFY_CLIENT_ID}:${process.env.VUE_APP_SPOTIFY_CLIENT_SECRET}`
-);
+import axios from './axios';
+import { spotifyAuthorization } from './utils';
 
 const spotify = {
   authorize: (params) => {
