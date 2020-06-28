@@ -1,6 +1,6 @@
 <template>
   <section class="spotify-handler">
-    <h1>Opa ola</h1>
+    <h1>Um momento...</h1>
   </section>
 </template>
 
