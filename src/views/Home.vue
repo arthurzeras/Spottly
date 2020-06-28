@@ -19,12 +19,9 @@
       </p>
 
       <div class="home__buttons">
-        <button>
-          Vamos lá!
-        </button>
-
-        <button>
-          Já tenho conta
+        <button @click="login()">
+          Entrar com meu twitter
+          <span class="fab fa-twitter" />
         </button>
       </div>
     </article>
@@ -32,8 +29,32 @@
 </template>
 
 <script>
+import { auth } from 'firebase/app';
+
 export default {
   name: 'Home',
+
+  methods: {
+    async login() {
+      try {
+        await this.$firebase.auth().setPersistence(auth.Auth.Persistence.LOCAL);
+
+        const provider = new auth.TwitterAuthProvider();
+
+        const result = await this.$firebase.auth().signInWithPopup(provider);
+
+        const credentials = JSON.stringify({
+          secret: result.credentials.secret,
+          accessToken: result.credentials.accessToken,
+        });
+
+        localStorage.setItem('credentials', credentials);
+      } catch (error) {
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
+    },
+  },
 };
 </script>
 
@@ -46,7 +67,6 @@ $off-container-padding: 50px;
   align-items: center;
   width: calc(100% - 100px);
   height: calc(100vh - 100px);
-  border: 2px dotted var(--dark);
 
   &__image-container {
     flex: 0 0 30%;
@@ -78,31 +98,23 @@ $off-container-padding: 50px;
     text-align: center;
 
     button {
-      border: none;
       margin: 0 20px;
+      line-height: 1;
       cursor: pointer;
       font-size: 1rem;
       transition: 0.4s;
-      padding: 5px 50px;
+      padding: 10px 50px;
       border-radius: 20px;
-      text-transform: uppercase;
+      border: 1px solid var(--dark);
+      background-color: var(--light);
 
-      &:first-child {
-        color: var(--white);
-        background-color: var(--primary);
-
-        &:hover {
-          background-color: var(--p-hover);
-        }
+      &:hover {
+        background-color: var(--white);
       }
 
-      &:last-child {
-        border: 1px solid var(--dark);
-        background-color: var(--light);
-
-        &:hover {
-          background-color: var(--white);
-        }
+      .fa-twitter {
+        margin-left: 5px;
+        color: #1a91da;
       }
     }
   }
