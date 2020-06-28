@@ -120,4 +120,29 @@ $off-container-padding: 50px;
     }
   }
 }
+
+@media (max-width: 576px) {
+  .home {
+    margin: 15px;
+    flex-direction: column;
+    justify-content: center;
+    width: calc(100% - 30px);
+
+    &__image-container {
+      padding: 0 30px;
+    }
+
+    &__content {
+      padding: 0;
+      margin-top: 15px;
+      text-align: center;
+    }
+
+    &__button {
+      margin: 0;
+      width: 100%;
+      display: block;
+    }
+  }
+}
 </style>
