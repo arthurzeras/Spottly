@@ -15,6 +15,11 @@ const routes = [
     path: '/dashboard',
     component: () => import(/* webpackChunkName: "Dashboard" */ '../views/Dashboard.vue'),
   },
+  {
+    name: 'SpotifyCallback',
+    path: '/spotify/callback',
+    component: () => import(/* webpackChunkName: "Dashboard" */ '../views/SpotifyHandler.vue'),
+  },
 ];
 
 const router = new VueRouter({
