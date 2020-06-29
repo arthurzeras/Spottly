@@ -34,18 +34,38 @@ import { auth } from 'firebase/app';
 export default {
   name: 'Home',
 
+  mounted() {
+    this.getRedirectResult();
+  },
+
   methods: {
     async login() {
       try {
+        this.$root.$emit('Loader::show');
+
         await this.$firebase.auth().setPersistence(auth.Auth.Persistence.LOCAL);
 
         const provider = new auth.TwitterAuthProvider();
 
-        const result = await this.$firebase.auth().signInWithPopup(provider);
+        this.$firebase.auth().signInWithRedirect(provider);
+      } catch (error) {
+        // TODO error
+        // eslint-disable-next-line no-console
+        console.error(error);
+      }
+    },
+
+    async getRedirectResult() {
+      try {
+        this.$root.$emit('Loader::show');
+
+        const result = await this.$firebase.auth().getRedirectResult();
+
+        if (!result.user) return;
 
         const credentials = JSON.stringify({
-          secret: result.credentials.secret,
-          accessToken: result.credentials.accessToken,
+          secret: result.credential.secret,
+          accessToken: result.credential.accessToken,
         });
 
         localStorage.setItem('credentials', credentials);
@@ -53,6 +73,8 @@ export default {
         // TODO error
         // eslint-disable-next-line no-console
         console.error(error);
+      } finally {
+        this.$root.$emit('Loader::hide');
       }
     },
   },

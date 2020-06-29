@@ -12,19 +12,30 @@
     </article>
 
     <article class="dashboard__top-artists" v-else>
-      <h3 class="dashboard__top-artists-title">Meus top artistas das últimas semanas</h3>
-
-      <div class="dashboard__top-artists-list">
-        <div class="dashboard__top-artists-item" v-for="artist in artists" :key="artist.id">
-          <img
-            :alt="artist.name"
-            class="dashboard__top-artists-image"
-            :src="getSmallestImage(artist.images)"
-          />
-
-          <span class="dashboard__top-artists-name">{{ artist.name }}</span>
-        </div>
+      <div class="dashboard__top-artists-loading fa-2x" v-if="loading">
+        <span class="fas fa-spin fa-circle-notch" />
       </div>
+
+      <div class="dashboard__top-artists-error" v-if="error">
+        <div>Opa, ocorreu algum erro ao carregar os artistas mais ouvidos</div>
+        <button class="dashboard__button" @click="getTopArtists()">Tentar novamente</button>
+      </div>
+
+      <template v-else>
+        <h3 class="dashboard__top-artists-title">Meus top artistas das últimas semanas</h3>
+
+        <div class="dashboard__top-artists-list">
+          <div class="dashboard__top-artists-item" v-for="artist in artists" :key="artist.id">
+            <img
+              :alt="artist.name"
+              class="dashboard__top-artists-image"
+              :src="getSmallestImage(artist.images)"
+            />
+
+            <span class="dashboard__top-artists-name">{{ artist.name }}</span>
+          </div>
+        </div>
+      </template>
     </article>
   </section>
 </template>
@@ -38,6 +49,8 @@ export default {
 
   data: () => ({
     artists: [],
+    error: false,
+    loading: false,
     range: 'short_term',
   }),
 
@@ -52,6 +65,8 @@ export default {
 
   methods: {
     spotifyAuth() {
+      this.$root.$emit('Loader::show');
+
       const redirectURI = encodeURIComponent(`${window.location.origin}/spotify/callback`);
 
       let redirectURL = 'https://accounts.spotify.com/authorize';
@@ -67,6 +82,9 @@ export default {
       if (!this.isConnectedOnSpotify) return;
 
       try {
+        this.error = false;
+        this.loading = true;
+
         const params = {
           limit: 10,
           time_range: this.range,
@@ -79,6 +97,9 @@ export default {
         // TODO error
         // eslint-disable-next-line no-console
         console.error(error);
+        this.error = true;
+      } finally {
+        this.loading = false;
       }
     },
 
@@ -130,6 +151,15 @@ export default {
   }
 
   &__top-artists {
+    &-loading {
+      text-align: center;
+      color: var(--primary);
+    }
+
+    &-error {
+      text-align: center;
+    }
+
     &-title {
       margin: 0;
       padding: 0 5px;

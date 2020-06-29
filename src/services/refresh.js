@@ -8,7 +8,7 @@ async function spotify() {
     params.append('refresh_token', localStorage.getItem('spotify_refresh'));
 
     const options = {
-      header: {
+      headers: {
         Authorization: `Basic ${spotifyAuthorization}`,
       },
     };
@@ -16,7 +16,6 @@ async function spotify() {
     const { data } = await axios.post('https://accounts.spotify.com/api/token', params, options);
 
     localStorage.setItem('spotify_token', data.access_token);
-    localStorage.setItem('spotify_refresh', data.refresh_token);
 
     return Promise.resolve();
   } catch (error) {

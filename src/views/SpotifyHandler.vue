@@ -20,6 +20,8 @@ export default {
 
     async getSpotifyTokens() {
       try {
+        this.$root.$emit('Loader::show');
+
         const { code } = this.$route.query;
 
         if (code) {
@@ -42,6 +44,8 @@ export default {
         // TODO error
         // eslint-disable-next-line no-console
         console.error(error);
+      } finally {
+        this.$root.$emit('Loader::hide');
       }
     },
   },

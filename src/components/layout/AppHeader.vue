@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex';
+import { mapState, mapActions } from 'vuex';
 
 export default {
   name: 'AppHeader',
@@ -59,6 +59,8 @@ export default {
   },
 
   methods: {
+    ...mapActions(['ACTION_SET_USER']),
+
     documentClickHandler(event = null) {
       const { target } = event;
       const el = this.$refs.userElement;
@@ -70,6 +72,8 @@ export default {
 
     async logout() {
       await this.$firebase.auth().signOut();
+
+      this.ACTION_SET_USER({});
 
       this.$router.push({ name: 'Home' });
     },
