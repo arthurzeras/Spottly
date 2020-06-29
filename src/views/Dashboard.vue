@@ -21,7 +21,7 @@
         <button class="dashboard__button" @click="getTopArtists()">Tentar novamente</button>
       </div>
 
-      <template v-else>
+      <template v-else-if="artists.length">
         <h3 class="dashboard__top-artists-title">Meus top artistas das últimas semanas</h3>
 
         <div class="dashboard__top-artists-list">
@@ -36,6 +36,10 @@
           </div>
         </div>
       </template>
+
+      <div class="dashboard__top-artists-empty" v-else>
+        <div>Poxa, não encontrei nenhum dado de artistas</div>
+      </div>
     </article>
   </section>
 </template>
@@ -156,7 +160,8 @@ export default {
       color: var(--primary);
     }
 
-    &-error {
+    &-error,
+    &-empty {
       text-align: center;
     }
 

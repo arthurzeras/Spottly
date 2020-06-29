@@ -50,8 +50,8 @@ export default {
         this.$firebase.auth().signInWithRedirect(provider);
       } catch (error) {
         // TODO error
-        // eslint-disable-next-line no-console
-        console.error(error);
+        // eslint-disable-next-line no-alert
+        window.alert('Não foi possível fazer login no twitter, tente novamente');
       }
     },
 
@@ -71,8 +71,8 @@ export default {
         localStorage.setItem('credentials', credentials);
       } catch (error) {
         // TODO error
-        // eslint-disable-next-line no-console
-        console.error(error);
+        // eslint-disable-next-line no-alert
+        window.alert('Não foi possível fazer login no twitter, tente novamente');
       } finally {
         this.$root.$emit('Loader::hide');
       }
