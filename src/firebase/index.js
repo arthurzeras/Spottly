@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/functions';
 
 export const firebaseApp = firebase.initializeApp({
   apiKey: process.env.VUE_APP_API_KEY,

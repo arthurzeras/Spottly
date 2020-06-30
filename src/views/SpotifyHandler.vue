@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import services from '@/services';
 import { mapActions } from 'vuex';
 
 export default {
@@ -31,7 +30,9 @@ export default {
             redirect_uri: `${window.location.origin}/spotify/callback`,
           };
 
-          const { data } = await services.spotify.authorize(params);
+          const authorize = this.$firebase.functions().httpsCallable('spotifyAuthorize');
+
+          const { data } = await authorize(params);
 
           localStorage.setItem('spotify_token', data.access_token);
           localStorage.setItem('spotify_refresh', data.refresh_token);
