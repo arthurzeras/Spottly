@@ -60,6 +60,7 @@ export default {
 
   mounted() {
     this.getTopArtists();
+    this.searchForErrors();
   },
 
   computed: {
@@ -104,6 +105,18 @@ export default {
         this.error = true;
       } finally {
         this.loading = false;
+      }
+    },
+
+    searchForErrors() {
+      if (Object.prototype.hasOwnProperty.call(this.$route.params, 'error')) {
+        const message =
+          this.$route.params.error === 'invalid-argument'
+            ? 'Poxa, não consegui encontrar seus dados no spotify dessa vez, pode tentar novamente?'
+            : 'Poxa, estou com algum problema de comunicação com o Spotify, pode tentar novamente?';
+
+        // eslint-disable-next-line no-alert
+        window.alert(message);
       }
     },
 

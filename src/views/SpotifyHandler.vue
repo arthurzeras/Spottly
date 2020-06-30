@@ -26,7 +26,7 @@ export default {
         if (code) {
           const params = {
             code,
-            grant_type: 'authorization_code',
+            grant_type: 'authorizaion_code',
             redirect_uri: `${window.location.origin}/spotify/callback`,
           };
 
@@ -42,9 +42,7 @@ export default {
           this.$router.push({ name: 'Dashboard' });
         }
       } catch (error) {
-        // TODO error
-        // eslint-disable-next-line no-console
-        console.error(error);
+        this.$router.push({ name: 'Dashboard', params: { error: error?.code } });
       } finally {
         this.$root.$emit('Loader::hide');
       }
