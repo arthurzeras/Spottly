@@ -26,7 +26,7 @@ export default {
         if (code) {
           const params = {
             code,
-            grant_type: 'authorizaion_code',
+            grant_type: 'authorization_code',
             redirect_uri: `${window.location.origin}/spotify/callback`,
           };
 
