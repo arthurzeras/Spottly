@@ -115,8 +115,7 @@ export default {
             ? 'Poxa, não consegui encontrar seus dados no spotify dessa vez, pode tentar novamente?'
             : 'Poxa, estou com algum problema de comunicação com o Spotify, pode tentar novamente?';
 
-        // eslint-disable-next-line no-alert
-        window.alert(message);
+        this.$root.$emit('Alert::show', message);
       }
     },
 

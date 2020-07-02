@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <app-alert />
     <app-loader />
     <app-header v-if="isLogged" />
     <router-view />
@@ -8,6 +9,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex';
+import AppAlert from './components/global/Alert.vue';
 import AppLoader from './components/global/Loader.vue';
 import AppHeader from './components/layout/AppHeader.vue';
 
@@ -15,6 +17,7 @@ export default {
   name: 'App',
 
   components: {
+    AppAlert,
     AppHeader,
     AppLoader,
   },
