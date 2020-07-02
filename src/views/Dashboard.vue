@@ -16,7 +16,7 @@
         <span class="fas fa-spin fa-circle-notch" />
       </div>
 
-      <div class="dashboard__top-artists-error" v-if="error">
+      <div class="dashboard__top-artists-error" v-else-if="error">
         <div>Opa, ocorreu algum erro ao carregar os artistas mais ouvidos</div>
         <button class="dashboard__button" @click="getTopArtists()">Tentar novamente</button>
       </div>
@@ -46,7 +46,7 @@
 
 <script>
 import services from '@/services';
-import { mapState, mapGetters } from 'vuex';
+import { mapState, mapGetters, mapActions } from 'vuex';
 
 export default {
   name: 'Dashboard',
@@ -60,7 +60,7 @@ export default {
 
   mounted() {
     this.getTopArtists();
-    this.searchForErrors();
+    this.searchForRouteParams();
   },
 
   computed: {
@@ -69,8 +69,10 @@ export default {
   },
 
   methods: {
+    ...mapActions(['ACTION_SET_LOADER']),
+
     spotifyAuth() {
-      this.$root.$emit('Loader::show');
+      this.ACTION_SET_LOADER(true);
 
       const redirectURI = encodeURIComponent(`${window.location.origin}/spotify/callback`);
 
@@ -108,7 +110,7 @@ export default {
       }
     },
 
-    searchForErrors() {
+    searchForRouteParams() {
       if (Object.prototype.hasOwnProperty.call(this.$route.params, 'error')) {
         const message =
           this.$route.params.error === 'invalid-argument'

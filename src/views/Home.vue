@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import { mapActions } from 'vuex';
 import { auth } from 'firebase/app';
 
 export default {
@@ -39,9 +40,11 @@ export default {
   },
 
   methods: {
+    ...mapActions(['ACTION_SET_LOADER']),
+
     async login() {
       try {
-        this.$root.$emit('Loader::show');
+        this.ACTION_SET_LOADER(true);
 
         await this.$firebase.auth().setPersistence(auth.Auth.Persistence.LOCAL);
 
@@ -57,7 +60,7 @@ export default {
 
     async getRedirectResult() {
       try {
-        this.$root.$emit('Loader::show');
+        this.ACTION_SET_LOADER(true);
 
         const result = await this.$firebase.auth().getRedirectResult();
 
@@ -74,7 +77,7 @@ export default {
         // eslint-disable-next-line no-alert
         window.alert('Não foi possível fazer login no twitter, tente novamente');
       } finally {
-        this.$root.$emit('Loader::hide');
+        this.ACTION_SET_LOADER(false);
       }
     },
   },

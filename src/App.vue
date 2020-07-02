@@ -24,9 +24,9 @@ export default {
 
   mounted() {
     this.$firebase.auth().onAuthStateChanged((user) => {
-      this.$root.$emit('Loader::show');
+      this.ACTION_SET_LOADER(true);
 
-      if (!user) return this.$root.$emit('Loader::hide');
+      if (!user) return this.ACTION_SET_LOADER(false);
 
       const { uid, displayName, photoURL, metadata } = user;
 
@@ -46,7 +46,7 @@ export default {
         this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(spotifyToken);
       }
 
-      this.$root.$emit('Loader::hide');
+      this.ACTION_SET_LOADER(false);
 
       if (this.$route.name === 'Home') {
         this.$router.push({ name: 'Dashboard' });
@@ -59,7 +59,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['ACTION_SET_USER', 'ACTION_SET_SPOTIFY_ACCESS_TOKEN']),
+    ...mapActions(['ACTION_SET_USER', 'ACTION_SET_SPOTIFY_ACCESS_TOKEN', 'ACTION_SET_LOADER']),
   },
 };
 </script>

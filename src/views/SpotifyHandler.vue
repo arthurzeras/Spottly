@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex';
+import { mapActions, mapState } from 'vuex';
 
 export default {
   name: 'SpotifyHandler',
@@ -14,13 +14,26 @@ export default {
     this.getSpotifyTokens();
   },
 
+  watch: {
+    loader: {
+      immediate: true,
+      handler(state) {
+        if (!state) {
+          this.ACTION_SET_LOADER(true);
+        }
+      },
+    },
+  },
+
+  computed: {
+    ...mapState(['loader']),
+  },
+
   methods: {
-    ...mapActions(['ACTION_SET_SPOTIFY_ACCESS_TOKEN']),
+    ...mapActions(['ACTION_SET_SPOTIFY_ACCESS_TOKEN', 'ACTION_SET_LOADER']),
 
     async getSpotifyTokens() {
       try {
-        this.$root.$emit('Loader::show');
-
         const { code } = this.$route.query;
 
         if (code) {
@@ -44,9 +57,13 @@ export default {
       } catch (error) {
         this.$router.push({ name: 'Dashboard', params: { error: error?.code } });
       } finally {
-        this.$root.$emit('Loader::hide');
+        this.ACTION_SET_LOADER(false);
       }
     },
+  },
+
+  destroyed() {
+    this.ACTION_SET_LOADER(false);
   },
 };
 </script>

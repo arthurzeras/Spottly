@@ -1,5 +1,5 @@
 <template>
-  <div class="loader" v-if="visible">
+  <div class="loader" v-if="loader">
     <div class="fa-4x">
       <span class="fas fa-spin fa-circle-notch" />
     </div>
@@ -7,22 +7,15 @@
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex';
+
 export default {
-  data: () => ({ visible: false }),
-
-  mounted() {
-    this.$root.$on('Loader::show', () => {
-      this.visible = true;
-    });
-
-    this.$root.$on('Loader::hide', () => {
-      this.visible = false;
-    });
+  computed: {
+    ...mapState(['loader']),
   },
 
-  beforeDestroy() {
-    this.$root.$off('Loader::show');
-    this.$root.$off('Loader::hide');
+  mtehods: {
+    ...mapActions(['ACTION_SET_LOADER']),
   },
 };
 </script>
