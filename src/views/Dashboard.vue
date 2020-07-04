@@ -12,6 +12,26 @@
     </article>
 
     <template v-else>
+      <article class="dashboard__twitter">
+        <h2 class="dashboard__twitter-title">
+          Postagem automática no twitter
+        </h2>
+
+        <div class="dashboard__twitter-status">
+          Ativada - Toda Segunda
+        </div>
+
+        <div class="dashboard__twitter-buttons">
+          <button class="dashboard__twitter-button-status">
+            Desativar
+          </button>
+
+          <button class="dashboard__twitter-button-day">
+            Alterar dia
+          </button>
+        </div>
+      </article>
+
       <article class="dashboard__top-artists">
         <div class="dashboard__top-artists-loading fa-2x" v-if="loading">
           <span class="fas fa-spin fa-circle-notch" />
@@ -145,8 +165,9 @@ export default {
   width: 100%;
   display: flex;
   align-items: center;
-  justify-content: center;
+  flex-direction: column;
   height: calc(100vh - 50px);
+  justify-content: space-around;
 
   &__connect-info {
     padding: 0 30px;
@@ -154,24 +175,40 @@ export default {
   }
 
   &__button {
-    border: none;
-    outline: none;
-    cursor: pointer;
-    transition: 0.4s;
-    margin-top: 20px;
-    font-size: 1.2rem;
-    padding: 5px 30px;
-    color: var(--white);
-    border-radius: 30px;
-    background-color: var(--primary);
-
-    &:hover {
-      background-color: var(--p-hover);
-    }
+    @include button();
 
     .fa-spotify {
       margin-left: 5px;
       color: var(--dark);
+    }
+  }
+
+  &__twitter {
+    text-align: center;
+
+    &-button {
+      &-status {
+        @include button();
+
+        font-size: 1rem;
+        margin-right: 5px;
+        padding: 2px 20px;
+      }
+
+      &-day {
+        @include button();
+
+        font-size: 1rem;
+        margin-left: 5px;
+        padding: 2px 20px;
+        color: var(--primary);
+        border: 1px solid var(--dark);
+        background-color: var(--white);
+
+        &:hover {
+          background-color: var(--dark);
+        }
+      }
     }
   }
 
