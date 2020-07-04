@@ -11,36 +11,43 @@
       </button>
     </article>
 
-    <article class="dashboard__top-artists" v-else>
-      <div class="dashboard__top-artists-loading fa-2x" v-if="loading">
-        <span class="fas fa-spin fa-circle-notch" />
-      </div>
-
-      <div class="dashboard__top-artists-error" v-else-if="error">
-        <div>Opa, ocorreu algum erro ao carregar os artistas mais ouvidos</div>
-        <button class="dashboard__button" @click="getTopArtists()">Tentar novamente</button>
-      </div>
-
-      <template v-else-if="artists.length">
-        <h3 class="dashboard__top-artists-title">Meus top artistas das últimas semanas</h3>
-
-        <div class="dashboard__top-artists-list">
-          <div class="dashboard__top-artists-item" v-for="artist in artists" :key="artist.id">
-            <img
-              :alt="artist.name"
-              class="dashboard__top-artists-image"
-              :src="getSmallestImage(artist.images)"
-            />
-
-            <span class="dashboard__top-artists-name">{{ artist.name }}</span>
-          </div>
+    <template v-else>
+      <article class="dashboard__top-artists">
+        <div class="dashboard__top-artists-loading fa-2x" v-if="loading">
+          <span class="fas fa-spin fa-circle-notch" />
         </div>
-      </template>
 
-      <div class="dashboard__top-artists-empty" v-else>
-        <div>Poxa, não encontrei nenhum dado de artistas</div>
-      </div>
-    </article>
+        <div class="dashboard__top-artists-error" v-else-if="error">
+          <div>Opa, ocorreu algum erro ao carregar os artistas mais ouvidos</div>
+          <button class="dashboard__button" @click="getTopArtists()">Tentar novamente</button>
+        </div>
+
+        <template v-else-if="artists.length">
+          <h3 class="dashboard__top-artists-title">Meus top artistas das últimas semanas</h3>
+
+          <div class="dashboard__top-artists-list">
+            <div class="dashboard__top-artists-item" v-for="artist in artists" :key="artist.id">
+              <img
+                :alt="artist.name"
+                class="dashboard__top-artists-image"
+                :src="getSmallestImage(artist.images)"
+              />
+
+              <span class="dashboard__top-artists-name">{{ artist.name }}</span>
+            </div>
+          </div>
+
+          <div class="dashboard__top-artists-disclaimer">
+            * Os dados são buscados do Spotify e exibidos na tela, o Spottly não mantém nenhum
+            histórico próprio.
+          </div>
+        </template>
+
+        <div class="dashboard__top-artists-empty" v-else>
+          <div>Poxa, não encontrei nenhum dado de artistas</div>
+        </div>
+      </article>
+    </template>
   </section>
 </template>
 
@@ -169,6 +176,9 @@ export default {
   }
 
   &__top-artists {
+    width: 100%;
+    padding: 0 15px;
+
     &-loading {
       text-align: center;
       color: var(--primary);
@@ -181,17 +191,18 @@ export default {
 
     &-title {
       margin: 0;
-      padding: 0 5px;
     }
 
     &-list {
       width: 100vw;
       display: flex;
       overflow-x: auto;
+      margin-left: -15px;
+      margin-right: -15px;
     }
 
     &-item {
-      padding: 0 5px 10px 5px;
+      padding: 0 15px 10px 15px;
     }
 
     &-image {
@@ -204,6 +215,12 @@ export default {
       line-height: 1.2;
       font-size: 0.8rem;
     }
+
+    &-disclaimer {
+      font-size: 0.8rem;
+      font-style: italic;
+      color: var(--neutral-2);
+    }
   }
 }
 
@@ -211,13 +228,11 @@ export default {
   .dashboard {
     &__top-artists {
       &-title {
-        padding: 0 15px;
         font-size: 1.5rem;
       }
 
       &-item {
         flex: 0 0 10%;
-        padding: 0 15px 10px 15px;
       }
 
       &-image {
