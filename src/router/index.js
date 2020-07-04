@@ -13,7 +13,7 @@ const routes = [
   {
     name: 'Dashboard',
     path: '/dashboard',
-    component: () => import(/* webpackChunkName: "Dashboard" */ '../views/Dashboard.vue'),
+    component: () => import(/* webpackChunkName: "Dashboard" */ '../views/dashboard/Dashboard.vue'),
   },
   {
     name: 'SpotifyCallback',

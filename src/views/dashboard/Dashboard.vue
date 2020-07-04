@@ -12,25 +12,7 @@
     </article>
 
     <template v-else>
-      <article class="dashboard__twitter">
-        <h2 class="dashboard__twitter-title">
-          Postagem automática no twitter
-        </h2>
-
-        <div class="dashboard__twitter-status">
-          Ativada - Toda Segunda
-        </div>
-
-        <div class="dashboard__twitter-buttons">
-          <button class="dashboard__twitter-button-status">
-            Desativar
-          </button>
-
-          <button class="dashboard__twitter-button-day">
-            Alterar dia
-          </button>
-        </div>
-      </article>
+      <twitter-status />
 
       <article class="dashboard__top-artists">
         <div class="dashboard__top-artists-loading fa-2x" v-if="loading">
@@ -74,9 +56,14 @@
 <script>
 import services from '@/services';
 import { mapState, mapGetters, mapActions } from 'vuex';
+import TwitterStatus from './components/TwitterStatus.vue';
 
 export default {
   name: 'Dashboard',
+
+  components: {
+    TwitterStatus,
+  },
 
   data: () => ({
     artists: [],
@@ -180,35 +167,6 @@ export default {
     .fa-spotify {
       margin-left: 5px;
       color: var(--dark);
-    }
-  }
-
-  &__twitter {
-    text-align: center;
-
-    &-button {
-      &-status {
-        @include button();
-
-        font-size: 1rem;
-        margin-right: 5px;
-        padding: 2px 20px;
-      }
-
-      &-day {
-        @include button();
-
-        font-size: 1rem;
-        margin-left: 5px;
-        padding: 2px 20px;
-        color: var(--primary);
-        border: 1px solid var(--dark);
-        background-color: var(--white);
-
-        &:hover {
-          background-color: var(--dark);
-        }
-      }
     }
   }
 
