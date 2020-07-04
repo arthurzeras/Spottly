@@ -10,11 +10,7 @@
     </div>
 
     <div class="twitter-status__buttons">
-      <select class="twitter-status__select" v-model="postDay" v-if="!active || updateDay">
-        <option :key="key" :value="key" v-for="(day, key) in weekDays">{{ day }}</option>
-      </select>
-
-      <button class="twitter-status__button-status" @click="toggleStatus()" v-if="!updateDay">
+      <button class="twitter-status__button-status" @click="toggleStatus(true)">
         {{ btnChangeStatusText }}
       </button>
 
@@ -22,23 +18,44 @@
         Alterar dia
       </button>
     </div>
+
+    <app-modal title="Dia de postagem" ref="changeDayModal">
+      <div class="twitter-status__post-day">
+        <label class="twitter-status__post-day__label">
+          Selecione o dia para as postagens:
+        </label>
+
+        <select class="twitter-status__select" v-model="postDay">
+          <option :key="key" :value="key" v-for="(day, key) in weekDays">{{ day }}</option>
+        </select>
+      </div>
+
+      <template slot="footer">
+        <button class="twitter-status__post-day__button" @click="toggleStatus()">
+          Ativar
+        </button>
+      </template>
+    </app-modal>
   </article>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import WeekDays from '../mixins/week';
+import AppModal from '@/components/global/Modal.vue';
 
 export default {
   name: 'TwitterStatus',
+
+  components: { AppModal },
 
   mixins: [WeekDays],
 
   data: () => ({
     active: false,
-    updateDay: false,
     postDay: 'monday',
     databaseRef: null,
+    updatingDay: false,
   }),
 
   mounted() {
@@ -72,8 +89,8 @@ export default {
         const snapshot = await this.databaseRef.once('value');
         const { twitterActive, postDay } = snapshot.val();
 
-        this.postDay = postDay;
         this.active = twitterActive;
+        this.postDay = postDay || 'monday';
       } catch (error) {
         this.$root.$emit(
           'Alert::show',
@@ -82,45 +99,35 @@ export default {
       }
     },
 
-    async toggleStatus() {
-      try {
-        await this.databaseRef.set({
-          postDay: this.postDay,
-          twitterActive: !this.active,
-        });
-
-        this.getData();
-      } catch (error) {
-        const action = this.active ? 'desativar' : 'ativar';
-
-        this.$root.$emit(
-          'Alert::show',
-          `Ops, não consegui ${action} a postagem automatica, pode tentar novamente?`
-        );
-      }
-    },
-
-    async handleUpdateDay() {
-      if (!this.updateDay) {
-        this.updateDay = true;
+    async toggleStatus(openChangeDayModal = false) {
+      if (!this.active && openChangeDayModal) {
+        this.$refs.changeDayModal.open();
         return;
       }
 
       try {
         await this.databaseRef.set({
           postDay: this.postDay,
-          twitterActive: this.active,
+          twitterActive: !this.updatingDay ? !this.active : true,
         });
 
-        this.updateDay = false;
+        this.$refs.changeDayModal.close();
 
         this.getData();
       } catch (error) {
-        this.$root.$emit(
-          'Alert::show',
-          `Ops, não consegui alterar o dia da postagem automatica, pode tentar novamente?`
-        );
+        const action = this.active ? 'desativar' : 'ativar';
+
+        const message = this.updatingDay
+          ? `Ops, não consegui alterar o dia da postagem automatica, pode tentar novamente?`
+          : `Ops, não consegui ${action} a postagem automatica, pode tentar novamente?`;
+
+        this.$root.$emit('Alert::show', message);
       }
+    },
+
+    async handleUpdateDay() {
+      this.updatingDay = true;
+      this.$refs.changeDayModal.open();
     },
   },
 };
@@ -130,15 +137,12 @@ export default {
 .twitter-status {
   text-align: center;
 
-  &__select {
-    margin-right: 10px;
-  }
-
   &__button {
     &-status {
       @include button();
 
       font-size: 1rem;
+      margin-top: 20px;
       margin-right: 5px;
       padding: 2px 20px;
     }
@@ -148,6 +152,7 @@ export default {
 
       font-size: 1rem;
       margin-left: 5px;
+      margin-top: 20px;
       padding: 2px 20px;
       color: var(--primary);
       border: 1px solid var(--dark);
@@ -156,6 +161,40 @@ export default {
       &:hover {
         background-color: var(--dark);
       }
+    }
+  }
+
+  &__post-day {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+
+    &__button {
+      @include button();
+      font-size: 1rem;
+      padding: 2px 20px;
+    }
+  }
+
+  &__select {
+    width: 50%;
+    outline: none;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    border-radius: 20px;
+    background-color: var(--white);
+    border: 1px solid var(--neutral-2);
+  }
+}
+
+@media (max-width: 576px) {
+  .twitter-status {
+    &__select {
+      width: 90%;
+      padding: 2px 8px;
+      font-size: 0.8rem;
     }
   }
 }
