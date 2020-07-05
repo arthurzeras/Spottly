@@ -66,19 +66,20 @@ export default {
 
         if (!result.user) return;
 
-        await this.$firebase
-          .database()
-          .ref(`users/${result.user.uid}`)
-          .set({ twitterActive: false });
+        const ref = this.$firebase.database().ref(`users/${result.user.uid}`);
+
+        const snapshot = await ref.once('value');
+
+        if (!snapshot.val().twitterActive) {
+          await ref.set({ twitterActive: false });
+        }
 
         await this.$firebase.database().ref(`users/${result.user.uid}/credentials/twitter`).set({
           secret: result.credential.secret,
           accessToken: result.credential.accessToken,
         });
       } catch (error) {
-        // TODO error
-        // eslint-disable-next-line no-alert
-        window.alert('Não foi possível fazer login no twitter, tente novamente');
+        this.$root.$emit('Alert::show', 'Não foi possível fazer login no twitter, tente novamente');
       } finally {
         this.ACTION_SET_LOADER(false);
       }
