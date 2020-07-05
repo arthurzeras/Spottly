@@ -66,12 +66,17 @@ export default {
 
         if (!result.user) return;
 
-        const credentials = JSON.stringify({
-          secret: result.credential.secret,
-          accessToken: result.credential.accessToken,
-        });
+        const ref = this.$firebase.database().ref(`users/${result.user.uid}`);
 
-        localStorage.setItem('credentials', credentials);
+        await ref.set({
+          twitterActive: false,
+          credentials: {
+            twitter: {
+              secret: result.credential.secret,
+              accessToken: result.credential.accessToken,
+            },
+          },
+        });
       } catch (error) {
         // TODO error
         // eslint-disable-next-line no-alert

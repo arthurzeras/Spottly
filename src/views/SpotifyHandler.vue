@@ -26,7 +26,7 @@ export default {
   },
 
   computed: {
-    ...mapState(['loader']),
+    ...mapState(['loader', 'user']),
   },
 
   methods: {
@@ -49,6 +49,15 @@ export default {
 
           localStorage.setItem('spotify_token', data.access_token);
           localStorage.setItem('spotify_refresh', data.refresh_token);
+
+          const databaseRef = this.$firebase
+            .database()
+            .ref(`users/${this.user.uid}/credentials/spotify`);
+
+          databaseRef.update({
+            accessToken: data.access_token,
+            refreshToken: data.refresh_token,
+          });
 
           this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(data.access_token);
 

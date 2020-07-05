@@ -106,7 +106,7 @@ export default {
       }
 
       try {
-        await this.databaseRef.set({
+        await this.databaseRef.update({
           postDay: this.postDay,
           twitterActive: !this.updatingDay ? !this.active : true,
         });
