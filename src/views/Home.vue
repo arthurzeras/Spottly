@@ -66,16 +66,14 @@ export default {
 
         if (!result.user) return;
 
-        const ref = this.$firebase.database().ref(`users/${result.user.uid}`);
+        await this.$firebase
+          .database()
+          .ref(`users/${result.user.uid}`)
+          .set({ twitterActive: false });
 
-        await ref.set({
-          twitterActive: false,
-          credentials: {
-            twitter: {
-              secret: result.credential.secret,
-              accessToken: result.credential.accessToken,
-            },
-          },
+        await this.$firebase.database().ref(`users/${result.user.uid}/credentials/twitter`).set({
+          secret: result.credential.secret,
+          accessToken: result.credential.accessToken,
         });
       } catch (error) {
         // TODO error
