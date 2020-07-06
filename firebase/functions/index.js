@@ -53,39 +53,42 @@ exports.spotifyRefreshToken = functions.https.onCall(async (params) => {
   }
 });
 
-exports.postScheduler = functions.pubsub.schedule('every 24 hours').onRun(async () => {
-  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-  const today = new Date().getDay();
+exports.postScheduler = functions.pubsub
+  .schedule('0 20 * * *')
+  .timeZone('America/Sao_Paulo')
+  .onRun(async () => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = new Date().getDay();
 
-  const ref = admin.database().ref('users');
-  const snapshot = await ref.once('value');
+    const ref = admin.database().ref('users');
+    const snapshot = await ref.once('value');
 
-  const users = snapshot.val();
+    const users = snapshot.val();
 
-  Object.keys(users).forEach(async (user) => {
-    const current = users[user];
+    Object.keys(users).forEach(async (user) => {
+      const current = users[user];
 
-    if (current.twitterActive && days[today] === current.postDay) {
-      try {
-        const artists = await localFunctions.getSpotifyTopArtists(
-          current,
-          functions.config().spotify
-        );
+      if (current.twitterActive && days[today] === current.postDay) {
+        try {
+          const artists = await localFunctions.getSpotifyTopArtists(
+            current,
+            functions.config().spotify
+          );
 
-        const twitterConfig = {
-          artists,
-          credentials: {
-            consumer_key: functions.config().twitter.key,
-            consumer_secret: functions.config().twitter.secret,
-            access_token_secret: current.credentials.twitter.secret,
-            access_token_key: current.credentials.twitter.accessToken,
-          },
-        };
+          const twitterConfig = {
+            artists,
+            credentials: {
+              consumer_key: functions.config().twitter.key,
+              consumer_secret: functions.config().twitter.secret,
+              access_token_secret: current.credentials.twitter.secret,
+              access_token_key: current.credentials.twitter.accessToken,
+            },
+          };
 
-        await localFunctions.twitterPostTopArtists(twitterConfig);
-      } catch (error) {
-        console.log('Erro ao postar top artistas: ', error);
+          await localFunctions.twitterPostTopArtists(twitterConfig);
+        } catch (error) {
+          console.log('Erro ao postar top artistas: ', error);
+        }
       }
-    }
+    });
   });
-});
