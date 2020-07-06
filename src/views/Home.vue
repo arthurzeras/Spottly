@@ -70,7 +70,7 @@ export default {
 
         const snapshot = await ref.once('value');
 
-        if (!snapshot.val().twitterActive) {
+        if (!snapshot.val()?.twitterActive) {
           await ref.set({ twitterActive: false });
         }
 
@@ -79,7 +79,11 @@ export default {
           accessToken: result.credential.accessToken,
         });
       } catch (error) {
-        this.$root.$emit('Alert::show', 'Não foi possível fazer login no twitter, tente novamente');
+        const message = (error?.code || '').includes('auth')
+          ? 'Não foi possível fazer login no twitter, tente novamente'
+          : 'Ops, ocorreu algum problema ao salvar suas informações';
+
+        this.$root.$emit('Alert::show', message);
       } finally {
         this.ACTION_SET_LOADER(false);
       }
