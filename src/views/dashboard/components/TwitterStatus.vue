@@ -113,6 +113,12 @@ export default {
 
         this.$refs.changeDayModal.close();
 
+        const message = !this.active
+          ? 'Postagem automática ativada, agora basta aguardar o dia selecionado e o Spottly irá postar automaticamente seus artistas'
+          : 'Postagem automatica desativada';
+
+        this.$root.$emit('Alert::show', message);
+
         this.getData();
       } catch (error) {
         const action = this.active ? 'desativar' : 'ativar';
