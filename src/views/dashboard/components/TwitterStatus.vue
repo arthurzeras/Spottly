@@ -19,6 +19,12 @@
       </button>
     </div>
 
+    <div class="twitter-status__post-now">
+      <button class="twitter-status__post-now__btn" @click="$emit('postNow')">
+        Tweetar agora
+      </button>
+    </div>
+
     <app-modal title="Dia de postagem" ref="changeDayModal">
       <div class="twitter-status__post-day">
         <label class="twitter-status__post-day__label">
@@ -180,6 +186,25 @@ export default {
       @include button();
       font-size: 1rem;
       padding: 2px 20px;
+    }
+  }
+
+  &__post-now {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--light);
+
+    &__btn {
+      @include button();
+
+      font-size: 1rem;
+      margin-right: 5px;
+      padding: 2px 20px;
+      background-color: var(--dark-2);
+
+      &:hover {
+        background-color: var(--dark);
+      }
     }
   }
 

@@ -61,7 +61,7 @@ async function twitterPostTopArtists(config) {
     const artists = config.artists.map((a) => `- ${a.name}`).join('\n');
 
     await client.post('statuses/update', {
-      status: `Meus top 5 artistas do Spotify na semana: \n ${artists} \n via #Spottly`,
+      status: `Meus top 5 artistas do Spotify na semana: \n${artists} \n via #Spottly`,
     });
 
     return Promise.resolve();

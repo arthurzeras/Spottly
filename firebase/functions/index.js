@@ -92,3 +92,26 @@ exports.postScheduler = functions.pubsub
       }
     });
   });
+
+exports.twitterPostTopArtists = functions.https.onCall(async (params) => {
+  try {
+    const ref = admin.database().ref(`users/${params.uid}`);
+    const snapshot = await ref.once('value');
+
+    const user = snapshot.val();
+
+    const twitterConfig = {
+      artists: params.artists,
+      credentials: {
+        consumer_key: functions.config().twitter.key,
+        consumer_secret: functions.config().twitter.secret,
+        access_token_secret: user.credentials.twitter.secret,
+        access_token_key: user.credentials.twitter.accessToken,
+      },
+    };
+
+    await localFunctions.twitterPostTopArtists(twitterConfig);
+  } catch (error) {
+    throw new functions.https.HttpsError(500, 'Desculpe, não foi possível publicar o tweet');
+  }
+});

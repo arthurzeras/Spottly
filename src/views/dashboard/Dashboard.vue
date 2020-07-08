@@ -12,7 +12,7 @@
     </article>
 
     <template v-else>
-      <twitter-status />
+      <twitter-status @postNow="postCurrentTopArtists()" />
 
       <article class="dashboard__top-artists">
         <div class="dashboard__top-artists-loading fa-2x" v-if="loading">
@@ -121,6 +121,31 @@ export default {
         this.error = true;
       } finally {
         this.loading = false;
+      }
+    },
+
+    async postCurrentTopArtists() {
+      try {
+        this.ACTION_SET_LOADER(true);
+
+        const postFunction = this.$firebase.functions().httpsCallable('twitterPostTopArtists');
+        const params = {
+          uid: this.user.uid,
+          artists: this.artists.slice(0, 5),
+        };
+
+        await postFunction(params);
+
+        this.$root.$emit('Alert::show', 'Tweet postado com sucesso');
+      } catch (error) {
+        const message =
+          !error?.message || error?.message === 'internal'
+            ? 'Desculpe, não foi possível publicar o tweet'
+            : error.message;
+
+        this.$root.$emit('Alert::show', message);
+      } finally {
+        this.ACTION_SET_LOADER(false);
       }
     },
 
