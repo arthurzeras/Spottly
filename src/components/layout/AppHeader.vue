@@ -5,6 +5,8 @@
       <span class="header__logo-title">Spottly</span>
     </div>
 
+    <span class="header__beta-info">BETA</span>
+
     <div class="header__user" ref="userElement">
       <img
         alt="User Image"
@@ -98,6 +100,12 @@ export default {
   height: 50px;
   display: flex;
   padding: 0 15px;
+
+  &__beta-info {
+    top: 15px;
+    left: 120px;
+    position: absolute;
+  }
 
   &__logo {
     @include columns();
