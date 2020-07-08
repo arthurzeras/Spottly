@@ -115,9 +115,6 @@ export default {
 
         this.artists = data.items;
       } catch (error) {
-        // TODO error
-        // eslint-disable-next-line no-console
-        console.error(error);
         this.error = true;
       } finally {
         this.loading = false;
