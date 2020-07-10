@@ -64,7 +64,7 @@ export default {
 
         const result = await this.$firebase.auth().getRedirectResult();
 
-        if (!result.user) return;
+        if (!result.user || !result?.user?.providerData.length) return;
 
         const ref = this.$firebase.database().ref(`users/${result.user.uid}`);
 
@@ -73,6 +73,11 @@ export default {
         if (!snapshot.val()?.twitterActive) {
           await ref.set({ twitterActive: false });
         }
+
+        await this.$firebase
+          .database()
+          .ref(`users/${result.user.uid}/metadata`)
+          .set(result.user.providerData[0]);
 
         await this.$firebase.database().ref(`users/${result.user.uid}/credentials/twitter`).set({
           secret: result.credential.secret,
