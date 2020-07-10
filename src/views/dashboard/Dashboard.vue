@@ -125,7 +125,7 @@ export default {
       try {
         this.ACTION_SET_LOADER(true);
 
-        const postFunction = this.$firebase.functions().httpsCallable('twitterPostTopArtists');
+        const postFunction = this.$firebase.functions().httpsCallable('manuallyPostTweet');
         const params = {
           uid: this.user.uid,
           artists: this.artists.slice(0, 5),

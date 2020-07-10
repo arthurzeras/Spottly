@@ -93,12 +93,21 @@ exports.postScheduler = functions.pubsub
     });
   });
 
-exports.twitterPostTopArtists = functions.https.onCall(async (params) => {
+exports.manuallyPostTweet = functions.https.onCall(async (params) => {
   try {
     const ref = admin.database().ref(`users/${params.uid}`);
     const snapshot = await ref.once('value');
 
     const user = snapshot.val();
+
+    if (user.log && user.log.lastPostTime) {
+      const now = Date.now();
+      const lastPostTime = new Date(user.log.lastPostTime).getTime();
+
+      if (now - lastPostTime < 900000) {
+        throw new Error('failed-precondition');
+      }
+    }
 
     const twitterConfig = {
       artists: params.artists,
@@ -111,7 +120,17 @@ exports.twitterPostTopArtists = functions.https.onCall(async (params) => {
     };
 
     await localFunctions.twitterPostTopArtists(twitterConfig);
+
+    await admin.database().ref(`users/${params.uid}/log`).update({
+      lastPostTime: new Date().toISOString(),
+    });
   } catch (error) {
-    throw new functions.https.HttpsError(500, 'Desculpe, não foi possível publicar o tweet');
+    const code = error.message === 'failed-precondition' ? 'failed-precondition' : 'internal';
+    const message =
+      code === 'failed-precondition'
+        ? 'Ops, você postou a pouco tempo, aguarde 15 minutos para postar novamente'
+        : 'Desculpe, não foi possível publicar o tweet';
+
+    throw new functions.https.HttpsError(code, message);
   }
 });
