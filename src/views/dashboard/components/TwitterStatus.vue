@@ -19,6 +19,10 @@
       </button>
     </div>
 
+    <div class="twitter-status__disclaimer">
+      As postagens automáticas acontecem no dia configurado as 20 horas horário de Brasília.
+    </div>
+
     <div class="twitter-status__post-now">
       <button class="twitter-status__post-now__btn" @click="$emit('postNow')">
         Tweetar agora
@@ -187,6 +191,11 @@ export default {
       font-size: 1rem;
       padding: 2px 20px;
     }
+  }
+
+  &__disclaimer {
+    padding: 0 15px;
+    margin-top: 10px;
   }
 
   &__post-now {
