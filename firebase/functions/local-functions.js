@@ -58,16 +58,34 @@ async function getSpotifyTopArtists(user, credentials, updatedAccessToken = null
 async function twitterPostTopArtists(config) {
   try {
     const client = new Twitter(config.credentials);
-    const artists = config.artists.map((a) => `- ${a.name}`).join('\n');
+    const artists = config.artists.map((a) => `- ${a.name}`);
 
     await client.post('statuses/update', {
-      status: `Meus top 5 artistas do Spotify na semana: \n${artists} \n via #Spottly`,
+      status: parseTweetString(artists),
     });
 
     return Promise.resolve();
   } catch (error) {
     return Promise.reject(error);
   }
+}
+
+function parseTweetString(artists) {
+  const base = (a = '') =>
+    `Meus top 5 artistas do Spotify nas últimas semanas:\n\n${a}\n\nvia #Spottly`;
+
+  const totalLen = artists.length - 1 + artists.reduce((a, c) => a + c.length, base().length);
+
+  if (totalLen > 280) {
+    const _artists = artists;
+    const greater = _artists.reduce((a, c) => (a.length > c.length ? a : c), '');
+
+    _artists[_artists.indexOf(greater)] = `${greater.substring(0, greater.length - 4).trim()}...`;
+
+    return this.format(_artists);
+  }
+
+  return base(artists.join('\n'));
 }
 
 module.exports = {
