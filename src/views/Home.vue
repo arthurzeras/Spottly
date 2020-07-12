@@ -4,7 +4,7 @@
       <img
         class="home__image"
         alt="headset image"
-        src="https://images.unsplash.com/photo-1495305379050-64540d6ee95d?"
+        src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e"
       />
     </aside>
 
@@ -52,9 +52,7 @@ export default {
 
         this.$firebase.auth().signInWithRedirect(provider);
       } catch (error) {
-        // TODO error
-        // eslint-disable-next-line no-alert
-        window.alert('Não foi possível fazer login no twitter, tente novamente');
+        this.$root.$emit('Alert::show', 'Não foi possível fazer login no twitter, tente novamente');
       }
     },
 
