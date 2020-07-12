@@ -4,30 +4,36 @@
       Postagem automática no twitter
     </h2>
 
-    <div class="twitter-status__info">
-      <span v-html="statusText"></span>
-      <span v-if="active"> - {{ dayText }}</span>
+    <div class="twitter-status__loading" v-if="loading">
+      <span class="fas fa-spin fa-circle-notch fa-2x" />
     </div>
 
-    <div class="twitter-status__buttons">
-      <button class="twitter-status__button-status" @click="toggleStatus(true)">
-        {{ btnChangeStatusText }}
-      </button>
+    <template v-else>
+      <div class="twitter-status__info">
+        <span v-html="statusText"></span>
+        <span v-if="active"> - {{ dayText }}</span>
+      </div>
 
-      <button class="twitter-status__button-day" v-if="active" @click="handleUpdateDay()">
-        Alterar dia
-      </button>
-    </div>
+      <div class="twitter-status__buttons">
+        <button class="twitter-status__button-status" @click="toggleStatus(true)">
+          {{ btnChangeStatusText }}
+        </button>
 
-    <div class="twitter-status__disclaimer">
-      As postagens automáticas acontecem no dia configurado as 20 horas horário de Brasília.
-    </div>
+        <button class="twitter-status__button-day" v-if="active" @click="handleUpdateDay()">
+          Alterar dia
+        </button>
+      </div>
 
-    <div class="twitter-status__post-now">
-      <button class="twitter-status__post-now__btn" @click="$emit('postNow')">
-        Tweetar agora
-      </button>
-    </div>
+      <div class="twitter-status__disclaimer">
+        As postagens automáticas acontecem no dia configurado as 20 horas horário de Brasília.
+      </div>
+
+      <div class="twitter-status__post-now">
+        <button class="twitter-status__post-now__btn" @click="$emit('postNow')">
+          Tweetar agora
+        </button>
+      </div>
+    </template>
 
     <app-modal title="Dia de postagem" ref="changeDayModal">
       <div class="twitter-status__post-day">
@@ -42,7 +48,7 @@
 
       <template slot="footer">
         <button class="twitter-status__post-day__button" @click="toggleStatus()">
-          Ativar
+          {{ modalBtnText }}
         </button>
       </template>
     </app-modal>
@@ -52,6 +58,7 @@
 <script>
 import { mapState } from 'vuex';
 import WeekDays from '../mixins/week';
+import Messages from '@/utils/messages';
 import AppModal from '@/components/global/Modal.vue';
 
 export default {
@@ -63,6 +70,7 @@ export default {
 
   data: () => ({
     active: false,
+    loading: true,
     postDay: 'monday',
     databaseRef: null,
     updatingDay: false,
@@ -83,6 +91,10 @@ export default {
       return this.active ? 'Desativar' : 'Ativar';
     },
 
+    modalBtnText() {
+      return this.updatingDay ? 'Alterar Dia' : 'Ativar';
+    },
+
     dayText() {
       const day = this.weekDays[this.postDay];
       const prefix = day.endsWith('o') ? 'Todo' : 'Toda';
@@ -94,6 +106,8 @@ export default {
   methods: {
     async getData() {
       try {
+        this.loading = true;
+
         this.databaseRef = this.$firebase.database().ref(`users/${this.user.uid}`);
 
         const snapshot = await this.databaseRef.once('value');
@@ -106,6 +120,8 @@ export default {
           'Alert::show',
           'Ops, não consegui buscar as informações de postagens automaticas'
         );
+      } finally {
+        this.loading = false;
       }
     },
 
@@ -123,19 +139,22 @@ export default {
 
         this.$refs.changeDayModal.close();
 
-        const message = !this.active
-          ? 'Postagem automática ativada, agora basta aguardar o dia selecionado e o Spottly irá postar automaticamente seus artistas'
-          : 'Postagem automatica desativada';
+        let message = Messages.Success.ACTIVE_AUTO_POST;
+
+        if (this.active) message = Messages.Success.DISABLE_AUTO_POST;
+        if (this.updatingDay) message = Messages.Success.CHANGE_POST_DAY;
 
         this.$root.$emit('Alert::show', message);
 
+        this.updatingDay = false;
+
         this.getData();
       } catch (error) {
-        const action = this.active ? 'desativar' : 'ativar';
+        const action = this.active ? 'ACTIVE' : 'DISABLE';
 
         const message = this.updatingDay
-          ? `Ops, não consegui alterar o dia da postagem automatica, pode tentar novamente?`
-          : `Ops, não consegui ${action} a postagem automatica, pode tentar novamente?`;
+          ? Messages.Failed.CHANGE_POST_DAY
+          : Messages.Failed[`${action}_AUTO_POST`];
 
         this.$root.$emit('Alert::show', message);
       }
