@@ -6,7 +6,7 @@
           {{ title }}
         </div>
 
-        <button class="modal__window-close">
+        <button class="modal__window-close" @click="close()">
           <span class="fa fa-times" />
         </button>
       </div>
