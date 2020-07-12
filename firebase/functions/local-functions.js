@@ -82,7 +82,7 @@ function parseTweetString(artists) {
 
     _artists[_artists.indexOf(greater)] = `${greater.substring(0, greater.length - 4).trim()}...`;
 
-    return this.format(_artists);
+    return parseTweetString(_artists);
   }
 
   return base(artists.join('\n'));
