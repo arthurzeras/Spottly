@@ -144,7 +144,7 @@ export default {
         if (this.active) message = Messages.Success.DISABLE_AUTO_POST;
         if (this.updatingDay) message = Messages.Success.CHANGE_POST_DAY;
 
-        this.$root.$emit('Alert::show', message);
+        this.$root.$emit('Alert::show', message, 'success');
 
         this.updatingDay = false;
 

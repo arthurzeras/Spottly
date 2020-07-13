@@ -133,14 +133,15 @@ export default {
 
         await postFunction(params);
 
-        this.$root.$emit('Alert::show', 'Tweet postado com sucesso');
+        this.$root.$emit('Alert::show', 'Tweet postado com sucesso', 'success');
       } catch (error) {
+        const type = !error?.message || error?.message === 'internal' ? 'error' : 'warn';
         const message =
           !error?.message || error?.message === 'internal'
             ? 'Desculpe, não foi possível publicar o tweet'
             : error.message;
 
-        this.$root.$emit('Alert::show', message);
+        this.$root.$emit('Alert::show', message, type);
       } finally {
         this.ACTION_SET_LOADER(false);
       }
