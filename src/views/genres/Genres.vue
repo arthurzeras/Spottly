@@ -18,19 +18,92 @@
 </template>
 
 <script>
+import services from '@/services';
+
 export default {
   name: 'Genres',
 
   data: () => ({
-    currentRange: 'short_term',
+    currentRange: 'short',
     ranges: [
-      { code: 'short_term', text: '~ mês' },
-      { code: 'medium_term', text: '~ 6 meses' },
-      { code: 'long_term', text: '~ todo o tempo' },
+      { code: 'short', text: '~ mês' },
+      { code: 'medium', text: '~ 6 meses' },
+      { code: 'long', text: '~ todo o tempo' },
     ],
+    rangesData: {
+      long: [],
+      short: [],
+      medium: [],
+    },
   }),
 
+  mounted() {
+    this.getData();
+  },
+
   methods: {
+    async getData() {
+      try {
+        if (this.rangesData[this.currentRange].length) return;
+
+        this.loading = true;
+
+        const params = {
+          limit: 50,
+          time_range: `${this.currentRange}_term`,
+        };
+
+        const { data } = await services.spotify.topArtists(params);
+
+        this.getGenresFromData(data.items);
+      } catch (error) {
+        console.log(error);
+        this.$root.$emit('Alert::show', 'Não foi possível carregar as informações');
+      } finally {
+        this.loading = false;
+      }
+    },
+
+    getGenresFromData(items) {
+      const reducer = (total, current) => {
+        const _total = total;
+
+        current.genres.forEach((genre) => {
+          const index = total.findIndex((i) => i.genre === genre);
+
+          if (index === -1) {
+            return _total.push({ genre, total: 1 });
+          }
+
+          _total[index].total += 1;
+        });
+
+        return _total;
+      };
+
+      const sorter = (a, b) => {
+        if (a.total < b.total) return 1;
+        if (a.total > b.total) return -1;
+        return 0;
+      };
+
+      const addPercent = (genre, index, arr) => {
+        const total = arr.reduce((a, c) => {
+          const _a = a + c.total;
+          return _a;
+        }, 0);
+
+        return {
+          ...genre,
+          percent: +((genre.total / total) * 100).toFixed(2),
+        };
+      };
+
+      const genres = items.reduce(reducer, []).sort(sorter).map(addPercent).splice(0, 30);
+
+      console.log(genres);
+    },
+
     changeCurrentRange(code) {
       this.currentRange = code;
     },
