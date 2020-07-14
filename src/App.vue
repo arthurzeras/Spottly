@@ -49,7 +49,7 @@ export default {
       this.ACTION_SET_LOADER(false);
 
       if (this.$route.name === 'Home') {
-        this.$router.push({ name: 'Dashboard' });
+        this.$router.push({ name: this.$route?.params?.goTo || 'Dashboard' });
       }
     });
   },
