@@ -1,15 +1,8 @@
 <template>
   <section class="dashboard">
-    <article class="dashboard__connect-info" v-if="!isConnectedOnSpotify">
-      <h2>Olá, {{ user.displayName }}!</h2>
+    <spotify-connect v-if="!isConnectedOnSpotify" />
 
-      <p>Conecte sua conta do Spotify ao Spottly para iniciar</p>
-
-      <button class="dashboard__button" @click="spotifyAuth()">
-        Conectar ao Spotify
-        <span class="fab fa-spotify" />
-      </button>
-    </article>
+    <auto-post-config v-else-if="isFirstConfig" />
 
     <template v-else>
       <twitter-status @postNow="postCurrentTopArtists()" />
@@ -57,12 +50,16 @@
 import services from '@/services';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import TwitterStatus from './components/TwitterStatus.vue';
+import SpotifyConnect from './components/SpotifyConnect.vue';
+import AutoPostConfig from './components/AutoPostConfig.vue';
 
 export default {
   name: 'Dashboard',
 
   components: {
     TwitterStatus,
+    SpotifyConnect,
+    AutoPostConfig,
   },
 
   data: () => ({
@@ -73,31 +70,18 @@ export default {
   }),
 
   mounted() {
+    this.getUserConfig();
     this.getTopArtists();
     this.searchForRouteParams();
   },
 
   computed: {
-    ...mapState(['user']),
-    ...mapGetters(['isConnectedOnSpotify']),
+    ...mapState(['user', 'userConfig']),
+    ...mapGetters(['isConnectedOnSpotify', 'isFirstConfig']),
   },
 
   methods: {
-    ...mapActions(['ACTION_SET_LOADER']),
-
-    spotifyAuth() {
-      this.ACTION_SET_LOADER(true);
-
-      const redirectURI = encodeURIComponent(`${window.location.origin}/spotify/callback`);
-
-      let redirectURL = 'https://accounts.spotify.com/authorize';
-      redirectURL += `?client_id=${process.env.VUE_APP_SPOTIFY_CLIENT_ID}`;
-      redirectURL += '&scope=user-top-read';
-      redirectURL += '&response_type=code';
-      redirectURL += `&redirect_uri=${redirectURI}`;
-
-      window.location.href = redirectURL;
-    },
+    ...mapActions(['ACTION_SET_LOADER', 'ACTION_SET_USER_CONFIG']),
 
     async getTopArtists() {
       if (!this.isConnectedOnSpotify) return;
@@ -118,6 +102,21 @@ export default {
         this.error = true;
       } finally {
         this.loading = false;
+      }
+    },
+
+    async getUserConfig() {
+      try {
+        this.ACTION_SET_LOADER(true);
+
+        await this.ACTION_SET_USER_CONFIG();
+      } catch (error) {
+        this.$root.$emit(
+          'Alert::show',
+          'Ops, não consegui buscar suas configurações, tente atualizar a página'
+        );
+      } finally {
+        this.ACTION_SET_LOADER(false);
       }
     },
 
@@ -179,18 +178,8 @@ export default {
   height: calc(100vh - 50px);
   justify-content: space-around;
 
-  &__connect-info {
-    padding: 0 30px;
-    text-align: center;
-  }
-
   &__button {
     @include button();
-
-    .fa-spotify {
-      margin-left: 5px;
-      color: var(--dark);
-    }
   }
 
   &__top-artists {
