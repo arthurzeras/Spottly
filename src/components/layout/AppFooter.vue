@@ -1,6 +1,6 @@
 <template>
   <footer class="app-footer">
-    <router-link class="app-footer__link" :to="{ meta: 'About' }">
+    <router-link class="app-footer__link" :to="{ name: 'About' }">
       Sobre
     </router-link>
   </footer>
@@ -22,6 +22,7 @@ export default {
   position: fixed;
   align-items: center;
   justify-content: center;
+  background-color: var(--white);
   border-top: 1px solid var(--neutral);
 
   &__link {
