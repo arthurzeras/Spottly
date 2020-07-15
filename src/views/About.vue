@@ -6,11 +6,13 @@
       <p>
         O Spottly é um serviço semelhante ao
 
-        <a class="about__link" href="https://tweekly.fm" target="_blank" rel="noopener noreferrer">
-          tweekly.fm
-        </a>
-
-        porém ao invés de buscar as estatísticas musicais do
+        <a
+          target="_blank"
+          class="about__link"
+          v-html="'tweekly.fm'"
+          rel="noopener noreferrer"
+          href="https://tweekly.fm"
+        />, porém, ao invés de buscar as estatísticas musicais do
 
         <a
           target="_blank"
@@ -22,9 +24,9 @@
       </p>
 
       <p>
-        O Spottly mantém apenas os dados necessários para buscar as estatísticas do Spotify e os
-        dados para postá-los no twitter, não armazenamos dados pessoais e/ou postamos spam ou algo
-        que não seja os artistas mais ouvidos.
+        Mantemos apenas os dados necessários para buscar as estatísticas do Spotify e os dados para
+        postá-los no twitter, não armazenamos dados pessoais e/ou postamos spam ou algo que não seja
+        os artistas mais ouvidos.
       </p>
 
       <p>
