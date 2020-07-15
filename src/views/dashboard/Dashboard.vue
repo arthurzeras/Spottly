@@ -107,12 +107,16 @@ export default {
 
     async getUserConfig() {
       try {
+        this.ACTION_SET_LOADER(true);
+
         await this.ACTION_SET_USER_CONFIG();
       } catch (error) {
         this.$root.$emit(
           'Alert::show',
           'Ops, não consegui buscar suas configurações, tente atualizar a página'
         );
+      } finally {
+        this.ACTION_SET_LOADER(false);
       }
     },
 
