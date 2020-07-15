@@ -72,10 +72,12 @@ export default {
           await ref.set({ twitterActive: false });
         }
 
-        await this.$firebase
-          .database()
-          .ref(`users/${result.user.uid}/metadata`)
-          .set(result.user.providerData[0]);
+        const metadata = {
+          ...result.user.providerData[0],
+          username: result.additionalUserInfo.username,
+        };
+
+        await this.$firebase.database().ref(`users/${result.user.uid}/metadata`).set(metadata);
 
         await this.$firebase.database().ref(`users/${result.user.uid}/credentials/twitter`).set({
           secret: result.credential.secret,
