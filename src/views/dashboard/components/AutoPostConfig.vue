@@ -105,18 +105,18 @@ export default {
   }
 }
 
-@media (max-width: 425px) {
-  .twitter-config {
-    &__post-day-container {
-      width: 100%;
-    }
-  }
-}
-
 @media (max-width: 768px) {
   .twitter-config {
     &__post-day-container {
       width: 50%;
+    }
+  }
+}
+
+@media (max-width: 425px) {
+  .twitter-config {
+    &__post-day-container {
+      width: 100%;
     }
   }
 }
