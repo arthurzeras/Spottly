@@ -1,9 +1,9 @@
 <template>
   <header class="header">
-    <div class="header__logo">
+    <router-link :to="{ name: 'Dashboard' }" class="header__logo">
       <img src="~@/assets/img/logo.png" alt="Logo" class="header__logo-img" />
       <span class="header__logo-title">Spottly</span>
-    </div>
+    </router-link>
 
     <span class="header__beta-info">BETA</span>
 
@@ -109,6 +109,8 @@ export default {
 
   &__logo {
     @include columns();
+
+    text-decoration: none;
 
     &-img {
       width: 35px;
