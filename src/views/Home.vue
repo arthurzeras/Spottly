@@ -105,7 +105,7 @@ $off-container-padding: 50px;
   display: flex;
   align-items: center;
   width: calc(100% - 100px);
-  height: calc(100vh - 100px);
+  height: calc(100vh - 140px);
 
   &__image-container {
     flex: 0 0 30%;
@@ -165,6 +165,7 @@ $off-container-padding: 50px;
     flex-direction: column;
     justify-content: center;
     width: calc(100% - 30px);
+    height: calc(100vh - 70px);
 
     &__image-container {
       padding: 0 30px;

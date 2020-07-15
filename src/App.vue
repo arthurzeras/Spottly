@@ -4,6 +4,7 @@
     <app-loader />
     <app-header v-if="isLogged" />
     <router-view />
+    <app-footer />
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import { mapActions, mapGetters } from 'vuex';
 import AppAlert from './components/global/Alert.vue';
 import AppLoader from './components/global/Loader.vue';
 import AppHeader from './components/layout/AppHeader.vue';
+import AppFooter from './components/layout/AppFooter.vue';
 
 export default {
   name: 'App',
@@ -20,6 +22,7 @@ export default {
     AppAlert,
     AppHeader,
     AppLoader,
+    AppFooter,
   },
 
   mounted() {
@@ -64,4 +67,8 @@ export default {
 };
 </script>
 
-<style lang="scss"></style>
+<style lang="scss">
+#app {
+  padding-bottom: 40px;
+}
+</style>

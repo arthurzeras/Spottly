@@ -175,7 +175,7 @@ export default {
   display: flex;
   align-items: center;
   flex-direction: column;
-  height: calc(100vh - 50px);
+  height: calc(100vh - 90px);
   justify-content: space-around;
 
   &__button {
