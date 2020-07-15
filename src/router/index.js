@@ -13,6 +13,7 @@ const routes = [
   {
     name: 'Dashboard',
     path: '/dashboard',
+    meta: { requireAuth: true },
     component: () => import(/* webpackChunkName: "Dashboard" */ '../views/dashboard/Dashboard.vue'),
   },
   {
@@ -36,8 +37,8 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const dontCameFromCallback = from?.name !== 'SpotifyCallback';
 
-  if (to.name === 'Dashboard' && !store.getters.isLogged && dontCameFromCallback) {
-    return next({ name: 'Home' });
+  if (to?.meta?.requireAuth && !store.getters.isLogged && dontCameFromCallback) {
+    return next({ name: 'Home', params: { goTo: to.name } });
   }
 
   return next();
