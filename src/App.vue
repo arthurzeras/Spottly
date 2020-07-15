@@ -2,14 +2,14 @@
   <div id="app">
     <app-alert />
     <app-loader />
-    <app-header v-if="isLogged" />
+    <app-header />
     <router-view />
     <app-footer />
   </div>
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 import AppAlert from './components/global/Alert.vue';
 import AppLoader from './components/global/Loader.vue';
 import AppHeader from './components/layout/AppHeader.vue';
@@ -55,10 +55,6 @@ export default {
         this.$router.push({ name: this.$route?.params?.goTo || 'Dashboard' });
       }
     });
-  },
-
-  computed: {
-    ...mapGetters(['isLogged']),
   },
 
   methods: {

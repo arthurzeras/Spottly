@@ -7,7 +7,7 @@
 
     <span class="header__beta-info">BETA</span>
 
-    <div class="header__user" ref="userElement">
+    <div class="header__user" ref="userElement" v-if="isLogged">
       <img
         alt="User Image"
         :src="user.photoURL"
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'AppHeader',
@@ -51,6 +51,7 @@ export default {
 
   computed: {
     ...mapState(['user']),
+    ...mapGetters(['isLogged']),
 
     nameTruncated() {
       const { displayName: name } = this.user;

@@ -105,7 +105,7 @@ $off-container-padding: 50px;
   display: flex;
   align-items: center;
   width: calc(100% - 100px);
-  height: calc(100vh - 140px);
+  height: calc(100vh - 190px);
 
   &__image-container {
     flex: 0 0 30%;
@@ -165,7 +165,7 @@ $off-container-padding: 50px;
     flex-direction: column;
     justify-content: center;
     width: calc(100% - 30px);
-    height: calc(100vh - 70px);
+    height: calc(100vh - 120px);
 
     &__image-container {
       padding: 0 30px;
@@ -184,7 +184,7 @@ $off-container-padding: 50px;
   }
 }
 
-@media (max-width: 360px) {
+@media (max-width: 425px) {
   .home {
     &__content {
       h2 {
