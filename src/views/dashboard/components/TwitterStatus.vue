@@ -57,7 +57,7 @@
 
 <script>
 import { mapState } from 'vuex';
-import WeekDays from '../mixins/week';
+import WeekDays from '@/mixins/week';
 import Messages from '@/utils/messages';
 import AppModal from '@/components/global/Modal.vue';
 

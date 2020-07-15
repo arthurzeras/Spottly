@@ -2,6 +2,8 @@
   <section class="dashboard">
     <spotify-connect v-if="!isConnectedOnSpotify" />
 
+    <auto-post-config v-else-if="isFirstConfig" />
+
     <template v-else>
       <twitter-status @postNow="postCurrentTopArtists()" />
 
@@ -49,6 +51,7 @@ import services from '@/services';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import TwitterStatus from './components/TwitterStatus.vue';
 import SpotifyConnect from './components/SpotifyConnect.vue';
+import AutoPostConfig from './components/AutoPostConfig.vue';
 
 export default {
   name: 'Dashboard',
@@ -56,6 +59,7 @@ export default {
   components: {
     TwitterStatus,
     SpotifyConnect,
+    AutoPostConfig,
   },
 
   data: () => ({
@@ -66,17 +70,18 @@ export default {
   }),
 
   mounted() {
+    this.getUserConfig();
     this.getTopArtists();
     this.searchForRouteParams();
   },
 
   computed: {
-    ...mapState(['user']),
-    ...mapGetters(['isConnectedOnSpotify']),
+    ...mapState(['user', 'userConfig']),
+    ...mapGetters(['isConnectedOnSpotify', 'isFirstConfig']),
   },
 
   methods: {
-    ...mapActions(['ACTION_SET_LOADER']),
+    ...mapActions(['ACTION_SET_LOADER', 'ACTION_SET_USER_CONFIG']),
 
     async getTopArtists() {
       if (!this.isConnectedOnSpotify) return;
@@ -97,6 +102,17 @@ export default {
         this.error = true;
       } finally {
         this.loading = false;
+      }
+    },
+
+    async getUserConfig() {
+      try {
+        await this.ACTION_SET_USER_CONFIG();
+      } catch (error) {
+        this.$root.$emit(
+          'Alert::show',
+          'Ops, não consegui buscar suas configurações, tente atualizar a página'
+        );
       }
     },
 

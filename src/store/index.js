@@ -8,6 +8,8 @@ export default new Vuex.Store({
   state: {
     user: {},
     loader: false,
+    userConfig: {},
+    skipConfig: false,
     spotify: {
       accessToken: '',
     },
@@ -25,6 +27,14 @@ export default new Vuex.Store({
     SET_SPOTIFY_ACCESS_TOKEN(state, payload) {
       state.spotify.accessToken = payload;
     },
+
+    SET_USER_CONFIG(state, payload) {
+      state.userConfig = payload;
+    },
+
+    SET_SKIP_CONFIG(state, payload) {
+      state.skipConfig = payload;
+    },
   },
 
   getters: {
@@ -34,6 +44,10 @@ export default new Vuex.Store({
 
     isConnectedOnSpotify({ spotify }) {
       return !!spotify.accessToken;
+    },
+
+    isFirstConfig({ userConfig, skipConfig }) {
+      return !skipConfig && !userConfig?.postDay && !userConfig?.twitterActive;
     },
   },
 
