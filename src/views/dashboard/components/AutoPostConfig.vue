@@ -118,6 +118,24 @@ export default {
     &__post-day-container {
       width: 100%;
     }
+
+    &__select {
+      font-size: 0.9rem;
+    }
+
+    &__button {
+      &-active {
+        font-size: 1rem;
+      }
+
+      &-skip {
+        font-size: 0.9rem;
+      }
+    }
+
+    p {
+      font-size: 0.9rem;
+    }
   }
 }
 </style>
