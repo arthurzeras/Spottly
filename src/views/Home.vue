@@ -79,7 +79,7 @@ export default {
 
         await this.$firebase.database().ref(`users/${result.user.uid}/metadata`).set(metadata);
 
-        await this.$firebase.database().ref(`users/${result.user.uid}/credentials/twitter`).set({
+        await this.$firebase.database().ref(`users/${result.user.uid}/credentials/twitter`).update({
           secret: result.credential.secret,
           accessToken: result.credential.accessToken,
         });

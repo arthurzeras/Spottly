@@ -72,7 +72,7 @@ async function twitterPostTopArtists(config) {
 
 function parseTweetString(artists) {
   const base = (a = '') =>
-    `Meus top 5 artistas do Spotify nas últimas semanas:\n\n${a}\n\nvia #Spottly`;
+    `Meus top 5 artistas do Spotify nas últimas semanas:\n\n${a}\n\nvia #Spottly spott-ly.web.app`;
 
   const totalLen = artists.length - 1 + artists.reduce((a, c) => a + c.length, base().length);
 
