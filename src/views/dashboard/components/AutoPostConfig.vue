@@ -2,7 +2,7 @@
   <article class="twitter-config">
     <h2>Vamos configurar postagem automática</h2>
 
-    <div>
+    <div class="twitter-config__post-day-container">
       <label for="postDay">
         Escolha o dia para as postagens:
       </label>
@@ -65,12 +65,24 @@ export default {
 <style lang="scss">
 .twitter-config {
   width: 100%;
+  display: flex;
   padding: 0 20px;
   text-align: center;
+  align-items: center;
+  flex-direction: column;
+  justify-content: center;
+
+  &__post-day-container {
+    width: 25%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 
   &__select {
     width: 100%;
     outline: none;
+    display: block;
     font-size: 1rem;
     cursor: pointer;
     padding: 5px 10px;
@@ -89,6 +101,40 @@ export default {
       font-size: 1rem;
       margin-top: 30px;
       background-color: transparent;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .twitter-config {
+    &__post-day-container {
+      width: 50%;
+    }
+  }
+}
+
+@media (max-width: 425px) {
+  .twitter-config {
+    &__post-day-container {
+      width: 100%;
+    }
+
+    &__select {
+      font-size: 0.9rem;
+    }
+
+    &__button {
+      &-active {
+        font-size: 1rem;
+      }
+
+      &-skip {
+        font-size: 0.9rem;
+      }
+    }
+
+    p {
+      font-size: 0.9rem;
     }
   }
 }

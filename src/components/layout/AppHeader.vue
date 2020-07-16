@@ -1,13 +1,13 @@
 <template>
   <header class="header">
-    <div class="header__logo">
+    <router-link :to="{ name: 'Dashboard' }" class="header__logo">
       <img src="~@/assets/img/logo.png" alt="Logo" class="header__logo-img" />
       <span class="header__logo-title">Spottly</span>
-    </div>
+    </router-link>
 
     <span class="header__beta-info">BETA</span>
 
-    <div class="header__user" ref="userElement">
+    <div class="header__user" ref="userElement" v-if="isLogged">
       <img
         alt="User Image"
         :src="user.photoURL"
@@ -36,7 +36,7 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'vuex';
+import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'AppHeader',
@@ -51,6 +51,7 @@ export default {
 
   computed: {
     ...mapState(['user']),
+    ...mapGetters(['isLogged']),
 
     nameTruncated() {
       const { displayName: name } = this.user;
@@ -109,6 +110,8 @@ export default {
 
   &__logo {
     @include columns();
+
+    text-decoration: none;
 
     &-img {
       width: 35px;
