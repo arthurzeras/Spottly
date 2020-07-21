@@ -31,12 +31,12 @@ export default {
 
       if (!user) return this.ACTION_SET_LOADER(false);
 
-      const { uid, displayName, photoURL, metadata } = user;
+      const { uid, providerData, metadata } = user;
 
       this.ACTION_SET_USER({
         uid,
-        photoURL,
-        displayName,
+        photoURL: providerData[0].photoURL,
+        displayName: providerData[0].displayName,
         timestamps: {
           created: metadata.a,
           lastLogin: metadata.b,
