@@ -1,4 +1,4 @@
-name: s3-deploy
+name: S3 Deploy
 
 on:
   push:
@@ -8,7 +8,7 @@ jobs:
   deploy_front:
     runs-on: ubuntu-latest
     name: Deploy Front End on S3
-    container: amazon/aws-cli:latest
+    # container: amazon/aws-cli:latest
     steps:
       - uses: actions/checkout@v2
 
@@ -17,3 +17,4 @@ jobs:
           mkdir ~/.aws
           echo "[default]\nregion = us-east-1\noutput = json" >> ~/.aws/config
           echo "[default]\naws_access_key_id = uii\naws_secret_access_key = opa"
+          ls ~/.aws
