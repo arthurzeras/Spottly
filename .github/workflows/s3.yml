@@ -53,4 +53,4 @@ jobs:
           aws-region: us-east-1
 
       - name: Copia arquivos para o bucket
-        run: aws s3 cp ./dist s3://spottly-status --grants full=emailaddress=arthurolvmorais@gmail.com --recursive
+        run: aws s3 cp ./dist s3://spottly-status --recursive --acl public-read-write
