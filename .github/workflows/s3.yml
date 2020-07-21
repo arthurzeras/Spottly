@@ -1,0 +1,19 @@
+name: s3-deploy
+
+on:
+  push:
+    branches: [ status ]
+
+jobs:
+  deploy_front:
+    runs-on: ubuntu-latest
+    name: Deploy Front End on S3
+    container: amazon/aws-cli:latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Criação da pasta de config da aws
+        run: |
+          mkdir ~/.aws
+          echo "[default]\nregion = us-east-1\noutput = json" >> ~/.aws/config
+          echo "[default]\naws_access_key_id = uii\naws_secret_access_key = opa"
