@@ -134,3 +134,22 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
     throw new functions.https.HttpsError(code, message);
   }
 });
+
+exports.getStatus = functions.https.onCall(async (params) => {
+  try {
+    if (params.uid !== 'kYnOYbN8pETqzSjYvLGhZEQOB6F3') throw new Error('failed-precondition');
+
+    const ref = admin.database().ref('users');
+    const snapshot = await ref.once('value');
+
+    return snapshot.val();
+  } catch (error) {
+    const code = error.message === 'failed-precondition' ? 'failed-precondition' : 'internal';
+    const message =
+      code === 'failed-precondition'
+        ? 'Você não tem permissão para executar essa ação'
+        : 'Não foi possível executar essa ação';
+
+    throw new functions.https.HttpsError(code, message);
+  }
+});
