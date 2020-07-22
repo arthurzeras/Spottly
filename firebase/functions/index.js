@@ -137,7 +137,7 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
 
 exports.getStatus = functions.https.onCall(async (params) => {
   try {
-    if (params.uid !== 'kYnOYbN8pETqzSjYvLGhZEQOB6F3') throw new Error('failed-precondition');
+    if (params.uid !== functions.config().admin.uid) throw new Error('failed-precondition');
 
     const ref = admin.database().ref('users');
     const snapshot = await ref.once('value');

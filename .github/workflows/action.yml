@@ -1,4 +1,4 @@
-name: FirebaseDeploy
+name: Firebase Deploy
 
 on:
   push:
@@ -14,12 +14,14 @@ jobs:
 
       - name: Define functions variables
         run: |
+          firebase functions:config:set admin.uid="$FIREBASE_ADMIN_UID" -P spott-ly --token $FIREBASE_TOKEN
           firebase functions:config:set twitter.key="$TWITTER_CLIENT_KEY" -P spott-ly --token $FIREBASE_TOKEN
           firebase functions:config:set twitter.secret="$TWITTER_CLIENT_SECRET" -P spott-ly --token $FIREBASE_TOKEN
           firebase functions:config:set spotify.id="$VUE_APP_SPOTIFY_CLIENT_ID" -P spott-ly --token $FIREBASE_TOKEN
           firebase functions:config:set spotify.secret="$SPOTIFY_CLIENT_SECRET" -P spott-ly --token $FIREBASE_TOKEN
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+          FIREBASE_ADMIN_UID: ${{ secrets.FIREBASE_ADMIN_UID }}
           TWITTER_CLIENT_KEY: ${{ secrets.TWITTER_CLIENT_KEY }}
           TWITTER_CLIENT_SECRET: ${{ secrets.TWITTER_CLIENT_SECRET }}
           VUE_APP_SPOTIFY_CLIENT_ID: ${{ secrets.VUE_APP_SPOTIFY_CLIENT_ID }}
