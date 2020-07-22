@@ -2,7 +2,13 @@
   <section class="status">
     <h1>Spottly Status ✌🏻💋</h1>
 
-    <article class="status__columns">
+    <article class="status__loading" v-if="loading">
+      <div class="fa-3x">
+        <span class="fas fa-spin fa-circle-notch" />
+      </div>
+    </article>
+
+    <article class="status__columns" v-else>
       <div class="status__column status__column-overall">
         <div class="status__column-users-count">
           <div>{{ counters.total }}</div>
@@ -21,8 +27,8 @@
             :key="uid"
             target="_blank"
             :href="user | profileURL"
-            v-for="(user, uid) in allUsers"
             class="status__column-list-item"
+            v-for="(user, uid) in listSorted"
           >
             <div class="status__column-list-item__metadata">
               <img
@@ -40,6 +46,7 @@
 
             <div class="status__column-list-item__active">
               <span class="fab fa-twitter" :class="{ active: user.twitterActive }" />
+              <small v-if="user.twitterActive">{{ user | postDay }}</small>
             </div>
           </a>
         </div>
@@ -56,6 +63,7 @@ export default {
 
   data: () => ({
     allUsers: {},
+    loading: true,
   }),
 
   mounted() {
@@ -79,6 +87,21 @@ export default {
         total: keys.length,
       };
     },
+
+    listSorted() {
+      const allUsers = {};
+
+      Object.keys(this.allUsers)
+        .sort((a) => {
+          if (this.allUsers[a].twitterActive) return -1;
+          return 1;
+        })
+        .forEach((uid) => {
+          allUsers[uid] = this.allUsers[uid];
+        });
+
+      return allUsers;
+    },
   },
 
   filters: {
@@ -96,6 +119,10 @@ export default {
       return user?.metadata?.username || '--';
     },
 
+    postDay(user) {
+      return user.postDay.substring(0, 3).toUpperCase();
+    },
+
     imageURL(user) {
       return (
         user?.metadata?.photoURL ||
@@ -107,6 +134,7 @@ export default {
   methods: {
     async getData() {
       try {
+        this.loading = true;
         const statusFunction = this.$firebase.functions().httpsCallable('getStatus');
 
         const params = {
@@ -116,6 +144,8 @@ export default {
         this.allUsers = (await statusFunction(params)).data;
       } catch (error) {
         this.$root.$emit('Alert::show', error.message || 'Deu ruim');
+      } finally {
+        this.loading = false;
       }
     },
   },
@@ -128,6 +158,14 @@ export default {
 
   h1 {
     font-size: 2rem;
+  }
+
+  &__loading {
+    display: flex;
+    align-items: center;
+    color: var(--primary);
+    justify-content: center;
+    height: calc(100vh - 220px);
   }
 
   &__columns {
@@ -168,6 +206,7 @@ export default {
 
         &__metadata {
           display: flex;
+          flex: 0 0 90%;
         }
 
         &__img {
@@ -182,8 +221,15 @@ export default {
         }
 
         &__active {
-          .fab.active {
-            color: var(--primary);
+          flex: 0 0 10%;
+          text-align: center;
+
+          .fab {
+            display: block;
+
+            &.active {
+              color: var(--primary);
+            }
           }
         }
       }
