@@ -191,7 +191,7 @@ export default {
   }
 }
 
-@media (max-width: 425px) {
+@media (max-width: 768px) {
   .status {
     padding: 0 10px;
 
@@ -211,6 +211,10 @@ export default {
 
       &-overall {
         margin-bottom: 15px;
+      }
+
+      &-users-count {
+        font-size: 1.5rem;
       }
 
       &-list {
