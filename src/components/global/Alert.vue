@@ -48,6 +48,7 @@ export default {
 .app-alert {
   left: 50px;
   bottom: 50px;
+  z-index: 100;
   display: flex;
   max-width: 75vw;
   padding: 15px 15px;

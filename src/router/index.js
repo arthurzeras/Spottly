@@ -22,6 +22,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "About" */ '../views/About.vue'),
   },
   {
+    name: 'Tops',
+    path: '/tops',
+    meta: { requireAuth: true },
+    component: () => import(/* webpackChunkName: "Tops" */ '../views/Tops.vue'),
+  },
+  {
     name: 'SpotifyHandler',
     path: '/spotify/callback',
     component: () => import(/* webpackChunkName: "SpotifyHandler" */ '../views/SpotifyHandler.vue'),

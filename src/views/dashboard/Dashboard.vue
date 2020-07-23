@@ -30,6 +30,15 @@
 
               <span class="dashboard__top-artists-name">{{ artist.name }}</span>
             </div>
+
+            <router-link
+              :to="{ name: 'Tops' }"
+              class="dashboard__top-artists-item dashboard__top-artists-item__more"
+            >
+              <span class="fa fa-chevron-circle-right fa-2x"></span>
+
+              <span class="dashboard__top-artists-item__more-label">Ver Mais</span>
+            </router-link>
           </div>
 
           <div class="dashboard__top-artists-disclaimer">
@@ -91,7 +100,7 @@ export default {
         this.loading = true;
 
         const params = {
-          limit: 10,
+          limit: 2,
           time_range: this.range,
         };
 
@@ -198,6 +207,7 @@ export default {
 
     &-title {
       margin: 0;
+      text-align: center;
     }
 
     &-list {
@@ -206,10 +216,24 @@ export default {
       overflow-x: auto;
       margin-left: -15px;
       margin-right: -15px;
+      justify-content: center;
     }
 
     &-item {
       padding: 0 15px 10px 15px;
+
+      &__more {
+        display: flex;
+        align-items: center;
+        color: var(--primary);
+        flex-direction: column;
+        text-decoration: none;
+        justify-content: center;
+
+        &-label {
+          margin-top: 5px;
+        }
+      }
     }
 
     &-image {
@@ -224,6 +248,7 @@ export default {
     }
 
     &-disclaimer {
+      text-align: center;
       font-size: 0.8rem;
       font-style: italic;
       color: var(--neutral-2);
