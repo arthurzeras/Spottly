@@ -1,10 +1,14 @@
 <template>
   <footer class="app-footer">
-    <router-link class="app-footer__link" :to="{ name: 'Dashboard' }">
+    <router-link class="app-footer__link" v-if="isLogged" :to="{ name: 'Dashboard' }">
       <span class="fa fa-home" />
       <small>Inicio</small>
     </router-link>
-    <router-link class="app-footer__link" v-if="isConnectedOnSpotify" :to="{ name: 'Tops' }">
+    <router-link
+      :to="{ name: 'Tops' }"
+      class="app-footer__link"
+      v-if="isConnectedOnSpotify && isLogged"
+    >
       <span class="fa fa-stream" />
       <small>Tops</small>
     </router-link>
@@ -22,7 +26,7 @@ export default {
   name: 'AppFooter',
 
   computed: {
-    ...mapGetters(['isConnectedOnSpotify']),
+    ...mapGetters(['isConnectedOnSpotify', 'isLogged']),
   },
 };
 </script>
@@ -41,6 +45,7 @@ export default {
   border-top: 1px solid var(--neutral);
 
   &__link {
+    width: 20%;
     display: flex;
     font-size: 0.9rem;
     align-items: center;

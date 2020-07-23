@@ -24,6 +24,7 @@ const routes = [
   {
     name: 'Tops',
     path: '/tops',
+    meta: { requireAuth: true },
     component: () => import(/* webpackChunkName: "Tops" */ '../views/Tops.vue'),
   },
   {
