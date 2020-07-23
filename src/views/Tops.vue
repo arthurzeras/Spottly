@@ -141,7 +141,7 @@ export default {
   }
 
   &__container {
-    height: calc(100vh - 240px);
+    height: calc(100vh - 260px);
 
     &-loader {
       height: 100%;

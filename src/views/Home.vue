@@ -165,7 +165,7 @@ $off-container-padding: 50px;
     flex-direction: column;
     justify-content: center;
     width: calc(100% - 30px);
-    height: calc(100vh - 120px);
+    height: calc(100vh - 140px);
 
     &__image-container {
       padding: 0 30px;

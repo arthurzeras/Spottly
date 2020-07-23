@@ -62,7 +62,7 @@ export default {
 
   computed: {
     ...mapState(['user']),
-    ...mapGetters(['isLogged']),
+    ...mapGetters(['isLogged', 'isConnectedOnSpotify']),
 
     nameTruncated() {
       const { displayName: name } = this.user;
@@ -72,9 +72,13 @@ export default {
     },
 
     routes() {
-      return this.$router.options.routes.filter((route) =>
-        ['Dashboard', 'Tops', 'About'].includes(route.name)
-      );
+      return this.$router.options.routes.filter((route) => {
+        return route.name === 'Tops'
+          ? this.isConnectedOnSpotify && this.isLogged
+          : route.name === 'Dashboard'
+          ? this.isLogged
+          : route.name === 'About';
+      });
     },
   },
 
@@ -147,9 +151,9 @@ export default {
 
     &-link {
       transition: 0.4s;
-      padding: 10px 20px;
       color: var(--dark);
       text-decoration: none;
+      padding: 10px 20px 5px 20px;
 
       &.router-link-exact-active {
         color: var(--primary);
