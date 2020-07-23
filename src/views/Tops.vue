@@ -142,7 +142,7 @@ export default {
   }
 
   &__container {
-    height: calc(100vh - 220px);
+    height: calc(100vh - 240px);
 
     &-loader {
       height: 100%;
@@ -171,6 +171,19 @@ export default {
           margin-left: 5px;
         }
       }
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .tops {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+
+    &__container {
+      width: 50%;
     }
   }
 }
