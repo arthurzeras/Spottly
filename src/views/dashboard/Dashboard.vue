@@ -182,9 +182,10 @@ export default {
 .dashboard {
   width: 100%;
   display: flex;
+  overflow-y: auto;
   align-items: center;
   flex-direction: column;
-  height: calc(100vh - 90px);
+  height: calc(100vh - 110px);
   justify-content: space-around;
 
   &__button {
@@ -194,6 +195,7 @@ export default {
   &__top-artists {
     width: 100%;
     padding: 0 15px;
+    margin-top: 15px;
 
     &-loading {
       text-align: center;
@@ -207,6 +209,7 @@ export default {
 
     &-title {
       margin: 0;
+      font-size: 1.5rem;
       text-align: center;
     }
 
@@ -256,21 +259,55 @@ export default {
   }
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
   .dashboard {
     &__top-artists {
       &-title {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
       }
 
       &-item {
-        flex: 0 0 10%;
+        width: 30%;
+        flex: 0 0 30%;
+        text-align: center;
       }
 
       &-image {
         width: 100%;
         height: auto;
         border-radius: 5px;
+      }
+    }
+  }
+}
+
+@media (max-width: 375px) {
+  .dashboard {
+    &__top-artists {
+      padding: 0 5px;
+
+      &-title {
+        font-size: 1rem;
+      }
+
+      &-list {
+        margin-left: -5px;
+        margin-right: -5px;
+      }
+
+      &-item {
+        font-size: 0.9rem;
+        padding: 0 5px 2px 5px;
+
+        &__more {
+          .fa-2x {
+            font-size: 1rem;
+          }
+        }
+      }
+
+      &-disclaimer {
+        font-size: 0.7rem;
       }
     }
   }

@@ -83,7 +83,6 @@ export default {
 
         this.rangesData[this.currentRange] = data.items;
       } catch (error) {
-        console.log(error);
         this.$root.$emit('Alert::show', 'Não foi possível carregar as informações');
       } finally {
         this.loading = false;
@@ -142,7 +141,7 @@ export default {
   }
 
   &__container {
-    height: calc(100vh - 240px);
+    height: calc(100vh - 260px);
 
     &-loader {
       height: 100%;
