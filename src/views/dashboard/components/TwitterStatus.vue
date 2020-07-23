@@ -257,4 +257,16 @@ export default {
     }
   }
 }
+
+@media (max-width: 375px) {
+  .twitter-status {
+    &__title {
+      font-size: 1.2rem;
+    }
+
+    &__disclaimer {
+      font-size: 0.8rem;
+    }
+  }
+}
 </style>
