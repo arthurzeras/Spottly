@@ -109,8 +109,13 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
       }
     }
 
+    const artists = await localFunctions.getSpotifyTopArtists(
+      user,
+      functions.config().spotify
+    );
+
     const twitterConfig = {
-      artists: params.artists,
+      artists,
       credentials: {
         consumer_key: functions.config().twitter.key,
         consumer_secret: functions.config().twitter.secret,
