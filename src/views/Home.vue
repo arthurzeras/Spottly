@@ -1,11 +1,7 @@
 <template>
   <section class="home">
     <aside class="home__image-container">
-      <img
-        class="home__image"
-        alt="headset image"
-        src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e"
-      />
+      <img class="home__image" alt="headset image" src="@/assets/img/headphone-banner.jpg" />
     </aside>
 
     <article class="home__content">
