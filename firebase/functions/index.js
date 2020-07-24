@@ -109,10 +109,7 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
       }
     }
 
-    const artists = await localFunctions.getSpotifyTopArtists(
-      user,
-      functions.config().spotify
-    );
+    const artists = await localFunctions.getSpotifyTopArtists(user, functions.config().spotify);
 
     const twitterConfig = {
       artists,
