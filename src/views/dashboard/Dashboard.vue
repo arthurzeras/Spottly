@@ -30,6 +30,15 @@
 
               <span class="dashboard__top-artists-name">{{ artist.name }}</span>
             </div>
+
+            <router-link
+              :to="{ name: 'Tops' }"
+              class="dashboard__top-artists-item dashboard__top-artists-item__more"
+            >
+              <span class="fa fa-chevron-circle-right fa-2x"></span>
+
+              <span class="dashboard__top-artists-item__more-label">Ver Mais</span>
+            </router-link>
           </div>
 
           <div class="dashboard__top-artists-disclaimer">
@@ -91,7 +100,7 @@ export default {
         this.loading = true;
 
         const params = {
-          limit: 10,
+          limit: 2,
           time_range: this.range,
         };
 
@@ -173,9 +182,10 @@ export default {
 .dashboard {
   width: 100%;
   display: flex;
+  overflow-y: auto;
   align-items: center;
   flex-direction: column;
-  height: calc(100vh - 90px);
+  height: calc(100vh - 110px);
   justify-content: space-around;
 
   &__button {
@@ -185,6 +195,7 @@ export default {
   &__top-artists {
     width: 100%;
     padding: 0 15px;
+    margin-top: 15px;
 
     &-loading {
       text-align: center;
@@ -198,6 +209,8 @@ export default {
 
     &-title {
       margin: 0;
+      font-size: 1.5rem;
+      text-align: center;
     }
 
     &-list {
@@ -206,10 +219,24 @@ export default {
       overflow-x: auto;
       margin-left: -15px;
       margin-right: -15px;
+      justify-content: center;
     }
 
     &-item {
       padding: 0 15px 10px 15px;
+
+      &__more {
+        display: flex;
+        align-items: center;
+        color: var(--primary);
+        flex-direction: column;
+        text-decoration: none;
+        justify-content: center;
+
+        &-label {
+          margin-top: 5px;
+        }
+      }
     }
 
     &-image {
@@ -224,6 +251,7 @@ export default {
     }
 
     &-disclaimer {
+      text-align: center;
       font-size: 0.8rem;
       font-style: italic;
       color: var(--neutral-2);
@@ -231,21 +259,55 @@ export default {
   }
 }
 
-@media (min-width: 768px) {
+@media (max-width: 768px) {
   .dashboard {
     &__top-artists {
       &-title {
-        font-size: 1.5rem;
+        font-size: 1.2rem;
       }
 
       &-item {
-        flex: 0 0 10%;
+        width: 30%;
+        flex: 0 0 30%;
+        text-align: center;
       }
 
       &-image {
         width: 100%;
         height: auto;
         border-radius: 5px;
+      }
+    }
+  }
+}
+
+@media (max-width: 375px) {
+  .dashboard {
+    &__top-artists {
+      padding: 0 5px;
+
+      &-title {
+        font-size: 1rem;
+      }
+
+      &-list {
+        margin-left: -5px;
+        margin-right: -5px;
+      }
+
+      &-item {
+        font-size: 0.9rem;
+        padding: 0 5px 2px 5px;
+
+        &__more {
+          .fa-2x {
+            font-size: 1rem;
+          }
+        }
+      }
+
+      &-disclaimer {
+        font-size: 0.7rem;
       }
     }
   }

@@ -13,12 +13,19 @@ const routes = [
   {
     name: 'Dashboard',
     path: '/dashboard',
-    meta: { requireAuth: true },
+    meta: { requireAuth: true, icon: 'home', displayTitle: 'Início' },
     component: () => import(/* webpackChunkName: "Dashboard" */ '../views/dashboard/Dashboard.vue'),
+  },
+  {
+    name: 'Tops',
+    path: '/tops',
+    meta: { requireAuth: true, icon: 'stream', displayTitle: 'Tops' },
+    component: () => import(/* webpackChunkName: "Tops" */ '../views/Tops.vue'),
   },
   {
     name: 'About',
     path: '/about',
+    meta: { requireAuth: false, icon: 'info-circle', displayTitle: 'Sobre' },
     component: () => import(/* webpackChunkName: "About" */ '../views/About.vue'),
   },
   {

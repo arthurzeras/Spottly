@@ -3,9 +3,20 @@
     <router-link :to="{ name: 'Dashboard' }" class="header__logo">
       <img src="~@/assets/img/logo.png" alt="Logo" class="header__logo-img" />
       <span class="header__logo-title">Spottly</span>
+      <span class="header__logo-beta-info">BETA</span>
     </router-link>
 
-    <span class="header__beta-info">BETA</span>
+    <nav class="header__nav">
+      <router-link
+        :key="route.name"
+        v-for="route in routes"
+        class="header__nav-link"
+        :to="{ name: route.name }"
+      >
+        <span class="fa header__nav-link-icon" :class="`fa-${route.meta.icon}`" />
+        <span>{{ route.meta.displayTitle }}</span>
+      </router-link>
+    </nav>
 
     <div class="header__user" ref="userElement" v-if="isLogged">
       <img
@@ -51,13 +62,23 @@ export default {
 
   computed: {
     ...mapState(['user']),
-    ...mapGetters(['isLogged']),
+    ...mapGetters(['isLogged', 'isConnectedOnSpotify']),
 
     nameTruncated() {
       const { displayName: name } = this.user;
       const newName = name.substr(0, 27);
 
       return name.length > 30 ? `${newName}...` : name;
+    },
+
+    routes() {
+      return this.$router.options.routes.filter((route) => {
+        return route.name === 'Tops'
+          ? this.isConnectedOnSpotify && this.isLogged
+          : route.name === 'Dashboard'
+          ? this.isLogged
+          : route.name === 'About';
+      });
     },
   },
 
@@ -91,7 +112,6 @@ export default {
 <style lang="scss">
 @mixin columns() {
   height: 100%;
-  flex: 0 0 50%;
   display: flex;
   align-items: center;
 }
@@ -101,12 +121,6 @@ export default {
   height: 50px;
   display: flex;
   padding: 0 15px;
-
-  &__beta-info {
-    top: 15px;
-    left: 120px;
-    position: absolute;
-  }
 
   &__logo {
     @include columns();
@@ -124,11 +138,40 @@ export default {
       margin: 4px 0 0 5px;
       color: var(--primary);
     }
+
+    &-beta-info {
+      color: var(--dark);
+      margin: 4px 0 0 5px;
+    }
+  }
+
+  &__nav {
+    margin: 0 20px;
+    @include columns();
+
+    &-link {
+      transition: 0.4s;
+      color: var(--dark);
+      text-decoration: none;
+      padding: 10px 20px 5px 20px;
+
+      &.router-link-exact-active {
+        color: var(--primary);
+      }
+
+      &-icon {
+        margin-right: 5px;
+      }
+
+      &:hover {
+        color: var(--p-hover);
+      }
+    }
   }
 
   &__user {
+    margin-left: auto;
     @include columns();
-    justify-content: flex-end;
 
     &-img {
       width: 40px;
@@ -196,6 +239,14 @@ export default {
 @media (max-width: 576px) {
   .header__user-info {
     display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .header {
+    &__nav {
+      display: none;
+    }
   }
 }
 </style>

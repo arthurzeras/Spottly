@@ -1,11 +1,7 @@
 <template>
   <section class="home">
     <aside class="home__image-container">
-      <img
-        class="home__image"
-        alt="headset image"
-        src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e"
-      />
+      <img class="home__image" alt="headset image" src="@/assets/img/headphone-banner.jpg" />
     </aside>
 
     <article class="home__content">
@@ -165,7 +161,7 @@ $off-container-padding: 50px;
     flex-direction: column;
     justify-content: center;
     width: calc(100% - 30px);
-    height: calc(100vh - 120px);
+    height: calc(100vh - 140px);
 
     &__image-container {
       padding: 0 30px;
