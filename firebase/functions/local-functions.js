@@ -61,14 +61,12 @@ async function getSpotifyTopArtists(
 
 async function twitterPostTopArtists(config) {
   try {
-    // const client = new Twitter(config.credentials);
+    const client = new Twitter(config.credentials);
     const artists = config.artists.map((a) => `- ${a.name}`);
 
-    // await client.post('statuses/update', {
-    //   status: parseTweetString(artists),
-    // });
-
-    console.log(parseTweetString(artists));
+    await client.post('statuses/update', {
+      status: parseTweetString(artists),
+    });
 
     return Promise.resolve();
   } catch (error) {
