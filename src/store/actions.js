@@ -46,9 +46,24 @@ const ACTION_ACTIVATE_AUTO_POST = async ({ state, dispatch }, payload) => {
   }
 };
 
+const ACTION_LOGOUT_SPOTIFY = ({ state, commit }) => {
+  localStorage.removeItem('spotify_token');
+  localStorage.removeItem('spotify_refresh');
+
+  commit('SET_SPOTIFY_ACCESS_TOKEN', '');
+
+  const ref = firebase.database().ref(`users/${state.user.uid}/credentials/spotify`);
+
+  return ref.update({
+    accessToken: '',
+    refreshToken: '',
+  });
+};
+
 export default {
   ACTION_SET_USER,
   ACTION_SET_LOADER,
+  ACTION_LOGOUT_SPOTIFY,
   ACTION_SET_SKIP_CONFIG,
   ACTION_SET_USER_CONFIG,
   ACTION_ACTIVATE_AUTO_POST,

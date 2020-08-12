@@ -1,11 +1,11 @@
 <template>
   <section class="dashboard">
-    <spotify-connect v-if="!isConnectedOnSpotify" />
+    <spotify-connect v-if="isConnectedOnSpotify" />
 
     <auto-post-config v-else-if="isFirstConfig" />
 
     <template v-else>
-      <twitter-status @postNow="postCurrentTopArtists()" />
+      <twitter-status @post-now="postCurrentTopArtists()" />
 
       <article class="dashboard__top-artists">
         <div class="dashboard__top-artists-loading fa-2x" v-if="loading">

@@ -29,7 +29,7 @@
       <div class="header__user-info">
         <span :title="user.displayName">Olá, {{ nameTruncated }}</span>
 
-        <button class="header__user-logout" title="Sair" @click="logout()">
+        <button class="header__user-logout" title="Sair" @click="btnLogoutHandler()">
           <span class="fa fa-power-off" />
         </button>
       </div>
@@ -37,20 +37,36 @@
       <div class="header__user-dropdown" v-show="dropdownVisible">
         <div class="header__user-name">{{ nameTruncated }}</div>
 
-        <button class="header__user-logout header__user-logout-mobile" @click="logout()">
+        <button @click="btnLogoutHandler()" class="header__user-logout header__user-logout-mobile">
           <span class="fa fa-power-off" />
           Sair
         </button>
       </div>
     </div>
+
+    <app-modal title="Logout" ref="logoutModal">
+      <div class="header__logout-modal">
+        <button @click="logout()" class="header__logout-modal--button">
+          Fazer logout somente do Spotify
+        </button>
+
+        <button class="header__logout-modal--button" @click="logout(true)">
+          Fazer logout de tudo
+        </button>
+      </div>
+    </app-modal>
   </header>
 </template>
 
 <script>
+import Messages from '@/utils/messages';
+import AppModal from '@/components/global/Modal.vue';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'AppHeader',
+
+  components: { AppModal },
 
   data: () => ({
     dropdownVisible: false,
@@ -83,7 +99,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['ACTION_SET_USER']),
+    ...mapActions(['ACTION_SET_USER', 'ACTION_LOGOUT_SPOTIFY', 'ACTION_SET_LOADER']),
 
     documentClickHandler(event = null) {
       const { target } = event;
@@ -94,12 +110,30 @@ export default {
       }
     },
 
-    async logout() {
-      await this.$firebase.auth().signOut();
+    btnLogoutHandler() {
+      if (!this.isConnectedOnSpotify) return this.logout(true);
 
-      this.ACTION_SET_USER({});
+      this.$refs.logoutModal.open();
+    },
 
-      this.$router.push({ name: 'Home' });
+    async logout(fullLogout = false) {
+      try {
+        this.ACTION_SET_LOADER(true);
+
+        await this.ACTION_LOGOUT_SPOTIFY();
+
+        if (fullLogout) {
+          await this.$firebase.auth().signOut();
+          this.ACTION_SET_USER({});
+        }
+
+        this.ACTION_SET_LOADER(false);
+        this.$refs.logoutModal.close();
+
+        if (fullLogout) this.$router.push({ name: 'Home' });
+      } catch (error) {
+        this.$root.$emit('Alert::show', Messages.Failed.LOGOUT);
+      }
     },
   },
 
@@ -231,6 +265,21 @@ export default {
 
       &:hover {
         color: var(--primary);
+      }
+    }
+  }
+
+  &__logout-modal {
+    display: flex;
+    padding: 50px 0;
+    align-content: center;
+    justify-content: space-around;
+
+    &--button {
+      @include button();
+
+      &:last-child {
+        background-color: var(--dark-2);
       }
     }
   }
