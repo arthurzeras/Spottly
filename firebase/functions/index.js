@@ -68,10 +68,13 @@ exports.postScheduler = functions.pubsub
     Object.keys(users).forEach(async (user) => {
       const current = users[user];
 
-      if (current.twitterActive && days[today] === current.postDay) {
+      const { accessToken, refreshToken } = current.credentials.spotify;
+      const hasSpotifyCredentials = Boolean(accessToken) && Boolean(refreshToken);
+
+      if (current.twitterActive && days[today] === current.postDay && hasSpotifyCredentials) {
         try {
           const artists = await localFunctions.getSpotifyTopArtists(
-            current,
+            { accessToken, refreshToken },
             functions.config().spotify
           );
 
@@ -109,7 +112,15 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
       }
     }
 
-    const artists = await localFunctions.getSpotifyTopArtists(user, functions.config().spotify);
+    const { accessToken, refreshToken } = user.credentials.spotify;
+    const hasSpotifyCredentials = Boolean(accessToken) && Boolean(refreshToken);
+
+    if (!hasSpotifyCredentials) throw new Error('internal');
+
+    const artists = await localFunctions.getSpotifyTopArtists(
+      { accessToken, refreshToken },
+      functions.config().spotify
+    );
 
     const twitterConfig = {
       artists,

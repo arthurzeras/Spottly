@@ -22,6 +22,8 @@ Executar:
 ```bash
   $ firebase functions:config:set spotify.id="xxx"
   $ firebase functions:config:set spotify.secret="xxx"
+  $ firebase functions:config:set twitter.key="xxx"
+  $ firebase functions:config:set twitter.secret="xxx"
 ```
 
 ## Testar funções localmente

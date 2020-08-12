@@ -1,0 +1,10 @@
+{
+  "spotify": {
+    "id": "",
+    "secret": ""
+  },
+  "twitter": {
+    "key": "",
+    "secret": ""
+  }
+}

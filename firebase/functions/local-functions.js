@@ -27,8 +27,12 @@ async function spotifyRefreshToken(params, credentials) {
   }
 }
 
-async function getSpotifyTopArtists(user, credentials, updatedAccessToken = null) {
-  const { accessToken, refreshToken } = user.credentials.spotify;
+async function getSpotifyTopArtists(
+  userCredentials,
+  spotifyCredentials,
+  updatedAccessToken = null
+) {
+  const { accessToken, refreshToken } = userCredentials;
 
   try {
     const params = {
@@ -47,8 +51,8 @@ async function getSpotifyTopArtists(user, credentials, updatedAccessToken = null
     return Promise.resolve(data.items);
   } catch (error) {
     if (error.response && error.response.status === 401) {
-      const data = await spotifyRefreshToken({ refreshToken }, credentials);
-      return getSpotifyTopArtists(user, credentials, data.access_token);
+      const data = await spotifyRefreshToken({ refreshToken }, spotifyCredentials);
+      return getSpotifyTopArtists(userCredentials, spotifyCredentials, data.access_token);
     }
 
     return Promise.reject(error);
