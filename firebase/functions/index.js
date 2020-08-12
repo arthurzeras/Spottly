@@ -138,8 +138,6 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
       lastPostTime: new Date().toISOString(),
     });
   } catch (error) {
-    console.log(error);
-
     const code = error.message === 'failed-precondition' ? 'failed-precondition' : 'internal';
     const message =
       code === 'failed-precondition'
