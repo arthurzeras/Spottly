@@ -1,3 +1,4 @@
+/* eslint-disable no-await-in-loop */
 const axios = require('axios');
 const admin = require('firebase-admin');
 const functions = require('firebase-functions');
@@ -53,8 +54,9 @@ exports.spotifyRefreshToken = functions.https.onCall(async (params) => {
   }
 });
 
-exports.postScheduler = functions.pubsub
-  .schedule('0 20 * * *')
+exports.postScheduler = functions
+  .runWith({ timeoutSeconds: 360 })
+  .pubsub.schedule('0 20 * * *')
   .timeZone('America/Sao_Paulo')
   .onRun(async () => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -65,35 +67,57 @@ exports.postScheduler = functions.pubsub
 
     const users = snapshot.val();
 
-    Object.keys(users).forEach(async (user) => {
+    const usersToPostToday = Object.keys(users).reduce((list, user) => {
       const current = users[user];
+      const _list = list;
 
-      const { accessToken, refreshToken } = current.credentials.spotify;
-      const hasSpotifyCredentials = Boolean(accessToken) && Boolean(refreshToken);
+      const credentials = current.credentials ? current.credentials.spotify || {} : {};
+      const hasSpotifyCredentials =
+        Boolean(credentials.accessToken) && Boolean(credentials.refreshToken);
 
       if (current.twitterActive && days[today] === current.postDay && hasSpotifyCredentials) {
-        try {
-          const artists = await localFunctions.getSpotifyTopArtists(
-            { accessToken, refreshToken },
-            functions.config().spotify
-          );
+        const payload = current;
+        payload.uid = user;
 
-          const twitterConfig = {
-            artists,
-            credentials: {
-              consumer_key: functions.config().twitter.key,
-              consumer_secret: functions.config().twitter.secret,
-              access_token_secret: current.credentials.twitter.secret,
-              access_token_key: current.credentials.twitter.accessToken,
-            },
-          };
-
-          await localFunctions.twitterPostTopArtists(twitterConfig);
-        } catch (error) {
-          console.log('Erro ao postar top artistas: ', error);
-        }
+        _list.push(payload);
       }
-    });
+
+      return _list;
+    }, []);
+
+    if (!usersToPostToday.length) return console.log('Sem usuários para postar hoje');
+
+    for (let user of usersToPostToday) {
+      try {
+        const artists = await localFunctions.getSpotifyTopArtists(
+          user.credentials.spotify,
+          functions.config().spotify
+        );
+
+        const twitterConfig = {
+          artists,
+          credentials: {
+            consumer_key: functions.config().twitter.key,
+            consumer_secret: functions.config().twitter.secret,
+            access_token_secret: user.credentials.twitter.secret,
+            access_token_key: user.credentials.twitter.accessToken,
+          },
+        };
+
+        await localFunctions.twitterPostTopArtists(twitterConfig);
+        await localFunctions.emulateDelay();
+      } catch (error) {
+        const msg = `
+          Erro ao postar top artistas para o usuario:
+          id: ${user.uid}
+          nome: ${user.metadata ? user.metadata.displayName : '--'}
+        `;
+
+        console.log(msg, error);
+      }
+    }
+
+    return 'Scheduler finalizado!';
   });
 
 exports.manuallyPostTweet = functions.https.onCall(async (params) => {
@@ -112,8 +136,9 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
       }
     }
 
-    const { accessToken, refreshToken } = user.credentials.spotify;
-    const hasSpotifyCredentials = Boolean(accessToken) && Boolean(refreshToken);
+    const credentials = user.credentials ? user.credentials.spotify || {} : {};
+    const hasSpotifyCredentials =
+      Boolean(credentials.accessToken) && Boolean(credentials.refreshToken);
 
     if (!hasSpotifyCredentials) throw new Error('internal');
 
