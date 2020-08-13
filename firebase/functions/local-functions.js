@@ -92,7 +92,14 @@ function parseTweetString(artists) {
   return base(artists.join('\n'));
 }
 
+function emulateDelay(ms = 2000) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
+}
+
 module.exports = {
+  emulateDelay,
   spotifyRefreshToken,
   getSpotifyTopArtists,
   twitterPostTopArtists,
