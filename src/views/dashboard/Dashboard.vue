@@ -1,6 +1,6 @@
 <template>
   <section class="dashboard">
-    <spotify-connect v-if="isConnectedOnSpotify" />
+    <spotify-connect v-if="!isConnectedOnSpotify" />
 
     <auto-post-config v-else-if="isFirstConfig" />
 
