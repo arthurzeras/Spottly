@@ -111,6 +111,8 @@ export default {
     },
 
     btnLogoutHandler() {
+      this.dropdownVisible = false;
+
       if (!this.isConnectedOnSpotify) return this.logout(true);
 
       this.$refs.logoutModal.open();
@@ -295,6 +297,14 @@ export default {
   .header {
     &__nav {
       display: none;
+    }
+
+    &__logout-modal {
+      flex-direction: column;
+
+      &--button {
+        margin-bottom: 10px;
+      }
     }
   }
 }
