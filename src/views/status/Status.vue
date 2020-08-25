@@ -23,24 +23,21 @@
 
       <div class="status__column">
         <div class="status__column-list">
-          <a
-            :key="uid"
-            target="_blank"
-            :href="user | profileURL"
-            class="status__column-list-item"
-            v-for="(user, uid) in listSorted"
-          >
+          <div :key="uid" class="status__column-list-item" v-for="(user, uid) in listSorted">
             <div class="status__column-list-item__metadata">
-              <img
-                width="50"
-                alt="Perfil"
-                :src="user | imageURL"
-                class="status__column-list-item__img"
-              />
+              <a :href="user | profileURL">
+                <img
+                  width="50"
+                  alt="Perfil"
+                  target="_blank"
+                  :src="user | imageURL"
+                  class="status__column-list-item__img"
+                />
+              </a>
 
               <div class="status__column-list-item__name">
                 {{ user | displayName }}
-                <small>@{{ user | username }}</small>
+                <small>@{{ user | username }} - {{ uid }}</small>
               </div>
             </div>
 
@@ -48,7 +45,7 @@
               <span class="fab fa-twitter" :class="{ active: user.twitterActive }" />
               <small v-if="user.twitterActive">{{ user | postDay }}</small>
             </div>
-          </a>
+          </div>
         </div>
       </div>
     </article>
@@ -193,10 +190,9 @@ export default {
         padding: 10px;
         display: flex;
         color: var(--dark);
-        align-items: center;
         border-radius: 5px;
         margin-bottom: 5px;
-        text-decoration: none;
+        align-items: center;
         justify-content: space-between;
         border: 1px solid var(--light);
 
