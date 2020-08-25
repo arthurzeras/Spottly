@@ -43,6 +43,14 @@ export default {
         },
       });
 
+      try {
+        await this.$firebase.database().ref(`users/${uid}/metadata`).update({
+          photoURL: providerData[0].photoURL,
+        });
+      } catch (error) {
+        // Do nothing.
+      }
+
       let userDataSnapshot = {};
 
       try {
@@ -64,7 +72,14 @@ export default {
       this.ACTION_SET_LOADER(false);
 
       if (this.$route.name === 'Home') {
-        this.$router.push({ name: this.$route?.params?.goTo || 'Dashboard' });
+        const name =
+          uid === process.env.VUE_APP_FIREBASE_ADMIN_UID
+            ? 'Status'
+            : this.$route?.params?.goTo
+            ? this.$route?.params?.goTo
+            : 'Dashboard';
+
+        this.$router.push({ name });
       }
     });
   },
