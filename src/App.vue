@@ -26,7 +26,7 @@ export default {
   },
 
   mounted() {
-    this.$firebase.auth().onAuthStateChanged((user) => {
+    this.$firebase.auth().onAuthStateChanged(async (user) => {
       this.ACTION_SET_LOADER(true);
 
       if (!user) return this.ACTION_SET_LOADER(false);
@@ -43,10 +43,22 @@ export default {
         },
       });
 
-      const spotifyToken = localStorage.getItem('spotify_token');
+      let userDataSnapshot = {};
 
-      if (spotifyToken) {
-        this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(spotifyToken);
+      try {
+        userDataSnapshot = await this.$firebase.database().ref(`users/${uid}`).once('value');
+      } catch (error) {
+        userDataSnapshot = {};
+      }
+
+      const { accessToken, refreshToken } = userDataSnapshot.val()?.credentials?.spotify || {};
+
+      if (refreshToken) {
+        localStorage.setItem('spotify_refresh', refreshToken);
+      }
+
+      if (accessToken) {
+        this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(accessToken);
       }
 
       this.ACTION_SET_LOADER(false);

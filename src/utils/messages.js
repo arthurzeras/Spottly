@@ -11,5 +11,6 @@ export default {
     DISABLE_AUTO_POST: 'Ops, não consegui desativar a postagem automatica, pode tentar novamente?',
     CHANGE_POST_DAY:
       'Ops, não consegui alterar o dia da postagem automatica, pode tentar novamente?',
+    LOGOUT: 'Ops, não consegui fazer logout, pode tentar novamente?',
   },
 };

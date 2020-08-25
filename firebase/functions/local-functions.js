@@ -1,11 +1,11 @@
 const axios = require('axios');
 const Twitter = require('twitter-lite');
 
-async function spotifyRefreshToken(params, credentials) {
+async function spotifyRefreshToken(refreshToken, credentials) {
   try {
     const data = new URLSearchParams();
     data.append('grant_type', 'refresh_token');
-    data.append('refresh_token', params.refreshToken);
+    data.append('refresh_token', refreshToken);
 
     const { id, secret } = credentials;
     const clientCode = Buffer.from(`${id}:${secret}`).toString('base64');
@@ -27,8 +27,12 @@ async function spotifyRefreshToken(params, credentials) {
   }
 }
 
-async function getSpotifyTopArtists(user, credentials, updatedAccessToken = null) {
-  const { accessToken, refreshToken } = user.credentials.spotify;
+async function getSpotifyTopArtists(
+  userCredentials,
+  spotifyCredentials,
+  updatedAccessToken = null
+) {
+  const { accessToken, refreshToken } = userCredentials;
 
   try {
     const params = {
@@ -47,8 +51,8 @@ async function getSpotifyTopArtists(user, credentials, updatedAccessToken = null
     return Promise.resolve(data.items);
   } catch (error) {
     if (error.response && error.response.status === 401) {
-      const data = await spotifyRefreshToken({ refreshToken }, credentials);
-      return getSpotifyTopArtists(user, credentials, data.access_token);
+      const data = await spotifyRefreshToken({ refreshToken }, spotifyCredentials);
+      return getSpotifyTopArtists(userCredentials, spotifyCredentials, data.access_token);
     }
 
     return Promise.reject(error);
@@ -88,7 +92,14 @@ function parseTweetString(artists) {
   return base(artists.join('\n'));
 }
 
+function emulateDelay(ms = 2000) {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(), ms);
+  });
+}
+
 module.exports = {
+  emulateDelay,
   spotifyRefreshToken,
   getSpotifyTopArtists,
   twitterPostTopArtists,

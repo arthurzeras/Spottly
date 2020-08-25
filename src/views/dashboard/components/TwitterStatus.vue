@@ -29,7 +29,7 @@
       </div>
 
       <div class="twitter-status__post-now">
-        <button class="twitter-status__post-now__btn" @click="$emit('postNow')">
+        <button class="twitter-status__post-now__btn" @click="$emit('post-now')">
           Tweetar agora
         </button>
       </div>

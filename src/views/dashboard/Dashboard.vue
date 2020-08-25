@@ -5,7 +5,7 @@
     <auto-post-config v-else-if="isFirstConfig" />
 
     <template v-else>
-      <twitter-status @postNow="postCurrentTopArtists()" />
+      <twitter-status @post-now="postCurrentTopArtists()" />
 
       <article class="dashboard__top-artists">
         <div class="dashboard__top-artists-loading fa-2x" v-if="loading">
@@ -80,8 +80,18 @@ export default {
 
   mounted() {
     this.getUserConfig();
-    this.getTopArtists();
     this.searchForRouteParams();
+  },
+
+  watch: {
+    isConnectedOnSpotify: {
+      immediate: true,
+      handler(isConnected) {
+        if (isConnected) {
+          this.getTopArtists();
+        }
+      },
+    },
   },
 
   computed: {

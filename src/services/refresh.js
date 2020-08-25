@@ -8,11 +8,13 @@ async function spotify() {
 
     const refreshAction = firebase.functions().httpsCallable('spotifyRefreshToken');
 
-    const { data } = await refreshAction({ refreshToken });
+    const { uid } = firebase.auth().currentUser;
+
+    const { data } = await refreshAction({ refreshToken, uid });
 
     localStorage.setItem('spotify_token', data.access_token);
 
-    return Promise.resolve();
+    return Promise.resolve(data.access_token);
   } catch (error) {
     return Promise.reject();
   }

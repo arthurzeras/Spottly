@@ -1,16 +1,33 @@
 <template>
   <section class="tops">
-    <h1>Meus top artistas</h1>
+    <div class="tops__type">
+      <button
+        class="tops__type-button"
+        @click="filters.type = 'artists'"
+        :class="{ active: filters.type === 'artists' }"
+      >
+        <span class="fa fa-guitar" />
+        TOP ARTISTAS
+      </button>
+      <button
+        class="tops__type-button"
+        @click="filters.type = 'tracks'"
+        :class="{ active: filters.type === 'tracks' }"
+      >
+        <span class="fa fa-music" />
+        TOP MÚSICAS
+      </button>
+    </div>
 
     <div class="tops__nav">
       <nav class="tops__nav-container">
         <button
           :key="range.code"
           v-html="range.text"
-          v-for="range in ranges"
           class="tops__nav-item"
-          @click="changeCurrentRange(range.code)"
-          :class="{ 'tops__nav-item__active': range.code === currentRange }"
+          v-for="range in ranges"
+          @click="filters.range = range.code"
+          :class="{ 'tops__nav-item__active': range.code === filters.range }"
         />
       </nav>
     </div>
@@ -24,17 +41,19 @@
         <li
           :key="item.id"
           class="tops__container-list__item"
-          v-for="item in rangesData[this.currentRange]"
+          v-for="item in rangesData[filters.type][filters.range]"
         >
           <img
             width="50"
             :alt="item.name"
+            v-if="filters.type === 'artists'"
             :src="getSmallestImage(item.images)"
             class="tops__container-list__item-image"
           />
 
           <div class="tops__container-list__item-name">
-            {{ item.name }}
+            <strong v-if="filters.type === 'tracks'">{{ item.artists[0].name }} - </strong>
+            <span>{{ item.name }}</span>
           </div>
         </li>
       </ul>
@@ -50,48 +69,61 @@ export default {
 
   data: () => ({
     loading: false,
-    currentRange: 'short',
+    filters: {
+      range: 'short',
+      type: 'artists',
+    },
     ranges: [
       { code: 'short', text: '~ mês' },
       { code: 'medium', text: '~ 6 meses' },
       { code: 'long', text: '~ todo o tempo' },
     ],
     rangesData: {
-      long: [],
-      short: [],
-      medium: [],
+      artists: {
+        long: [],
+        short: [],
+        medium: [],
+      },
+      tracks: {
+        long: [],
+        short: [],
+        medium: [],
+      },
     },
   }),
 
-  mounted() {
-    this.getData();
+  watch: {
+    filters: {
+      deep: true,
+      immediate: true,
+      handler() {
+        this.getData();
+      },
+    },
   },
 
   methods: {
     async getData() {
       try {
-        if (this.rangesData[this.currentRange].length) return;
+        if (this.rangesData[this.filters.type][this.filters.range].length) return;
 
         this.loading = true;
 
         const params = {
           limit: 50,
-          time_range: `${this.currentRange}_term`,
+          time_range: `${this.filters.range}_term`,
         };
 
-        const { data } = await services.spotify.topArtists(params);
+        const action = this.filters.type === 'artists' ? 'topArtists' : 'topTracks';
 
-        this.rangesData[this.currentRange] = data.items;
+        const { data } = await services.spotify[action](params);
+
+        this.rangesData[this.filters.type][this.filters.range] = data.items;
       } catch (error) {
         this.$root.$emit('Alert::show', 'Não foi possível carregar as informações');
       } finally {
         this.loading = false;
       }
-    },
-
-    changeCurrentRange(code) {
-      this.currentRange = code;
-      this.getData();
     },
 
     getSmallestImage(images) {
@@ -109,6 +141,41 @@ export default {
 <style lang="scss">
 .tops {
   padding: 0 15px;
+
+  &__type {
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+    &-button {
+      @include button();
+
+      width: 50%;
+      font-size: 1rem;
+      color: var(--primary);
+      background-color: transparent;
+      border: 1px solid var(--primary);
+
+      &:hover {
+        color: var(--white);
+        background-color: var(--primary);
+      }
+
+      &.active {
+        color: var(--white);
+        background-color: var(--primary);
+      }
+
+      &:last-child {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+      }
+
+      &:first-child {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
+    }
+  }
 
   &__nav {
     width: 100%;
@@ -181,8 +248,21 @@ export default {
     flex-direction: column;
     justify-content: center;
 
+    &__type,
     &__container {
       width: 50%;
+    }
+
+    &__container {
+      height: calc(100vh - 204px);
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  .tops {
+    &__container {
+      height: calc(100vh - 204px);
     }
   }
 }
