@@ -51,7 +51,7 @@ async function getSpotifyTopArtists(
     return Promise.resolve(data.items);
   } catch (error) {
     if (error.response && error.response.status === 401) {
-      const data = await spotifyRefreshToken({ refreshToken }, spotifyCredentials);
+      const data = await spotifyRefreshToken(refreshToken, spotifyCredentials);
       return getSpotifyTopArtists(userCredentials, spotifyCredentials, data.access_token);
     }
 
