@@ -29,13 +29,11 @@ export default {
     spotifyAuth() {
       this.ACTION_SET_LOADER(true);
 
-      const redirectURI = encodeURIComponent(`${window.location.origin}/spotify/callback`);
-
-      let redirectURL = 'https://accounts.spotify.com/authorize';
-      redirectURL += `?client_id=${process.env.VUE_APP_SPOTIFY_CLIENT_ID}`;
-      redirectURL += '&scope=user-top-read';
-      redirectURL += '&response_type=code';
-      redirectURL += `&redirect_uri=${redirectURI}`;
+      const redirectURL = new URL('https://accounts.spotify.com/authorize');
+      redirectURL.searchParams.append('response_type', 'code');
+      redirectURL.searchParams.append('client_id', process.env.VUE_APP_SPOTIFY_CLIENT_ID);
+      redirectURL.searchParams.append('scope', 'user-top-read user-read-recently-played');
+      redirectURL.searchParams.append('redirect_uri', `${window.location.origin}/spotify/callback`);
 
       window.location.href = redirectURL;
     },
