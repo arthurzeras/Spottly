@@ -92,7 +92,9 @@ exports.postScheduler = functions
       return _list;
     }, []);
 
-    if (!usersToPostToday.length) return console.log('Sem usuários para postar hoje');
+    if (!usersToPostToday.length) {
+      return functions.logger.info('🤷‍♂️ Post Scheduler: Sem nada para postar hoje');
+    }
 
     for (let user of usersToPostToday) {
       try {
@@ -111,20 +113,55 @@ exports.postScheduler = functions
           },
         };
 
-        await localFunctions.twitterPostTopArtists(twitterConfig);
+        if (user.storeHistoryActivated) {
+          await localFunctions.postTweetByHistory({
+            admin,
+            uid: user.uid,
+            credentials: twitterConfig.credentials,
+          });
+
+          await localFunctions.clearHistoryFromLastWeek(user.uid, admin);
+        } else {
+          await localFunctions.twitterPostTopArtists(twitterConfig);
+        }
+
         await localFunctions.emulateDelay();
       } catch (error) {
-        const msg = `
-          Erro ao postar top artistas para o usuario:
-          id: ${user.uid}
-          nome: ${user.metadata ? user.metadata.displayName : '--'}
-        `;
-
-        console.log(msg, error);
+        functions.logger.error(
+          '❌ Post Scheduler: ',
+          `id: ${user.uid} - nome: ${user.metadata ? user.metadata.displayName : '--'}`,
+          error
+        );
       }
     }
 
-    return 'Scheduler finalizado!';
+    return functions.logger.info('✅ Post Scheduler: Finalizado');
+  });
+
+exports.getHistoryScheduler = functions
+  .runWith({ timeoutSeconds: 360 })
+  .pubsub.schedule('00 * * * *')
+  .timeZone('America/Sao_Paulo')
+  .onRun(async () => {
+    const snapshot = await admin.database().ref('users').once('value');
+    const users = snapshot.val();
+
+    const storeList = Object.keys(users)
+      .filter((user) => users[user].storeHistoryActivated)
+      .map((user) =>
+        localFunctions.storePlaybackHistory({
+          admin,
+          uid: user,
+          credentials: users[user].credentials.spotify,
+          spotifyCredentials: functions.config().spotify,
+        })
+      );
+
+    try {
+      await Promise.all(storeList);
+    } catch (error) {
+      functions.logger.error('❌ Get History Scheduler: ', error.message, error);
+    }
   });
 
 exports.manuallyPostTweet = functions.https.onCall(async (params) => {
