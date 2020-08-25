@@ -43,20 +43,22 @@ export default {
         },
       });
 
-      let userDataSnapshot = null;
+      let userDataSnapshot = {};
 
       try {
         userDataSnapshot = await this.$firebase.database().ref(`users/${uid}`).once('value');
       } catch (error) {
-        userDataSnapshot = null;
+        userDataSnapshot = {};
       }
 
-      const spotifyToken = userDataSnapshot
-        ? userDataSnapshot.val()?.credentials?.spotify?.accessToken
-        : null;
+      const { accessToken, refreshToken } = userDataSnapshot.val()?.credentials?.spotify || {};
 
-      if (spotifyToken) {
-        this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(spotifyToken);
+      if (refreshToken) {
+        localStorage.setItem('spotify_refresh', refreshToken);
+      }
+
+      if (accessToken) {
+        this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(accessToken);
       }
 
       this.ACTION_SET_LOADER(false);

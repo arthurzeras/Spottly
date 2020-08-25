@@ -80,8 +80,18 @@ export default {
 
   mounted() {
     this.getUserConfig();
-    this.getTopArtists();
     this.searchForRouteParams();
+  },
+
+  watch: {
+    isConnectedOnSpotify: {
+      immediate: true,
+      handler(isConnected) {
+        if (isConnected) {
+          this.getTopArtists();
+        }
+      },
+    },
   },
 
   computed: {

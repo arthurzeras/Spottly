@@ -10,6 +10,7 @@ const ACTION_SET_USER = ({ commit }, payload) => {
 
 const ACTION_SET_SPOTIFY_ACCESS_TOKEN = ({ commit }, payload) => {
   commit('SET_SPOTIFY_ACCESS_TOKEN', payload);
+  localStorage.setItem('spotify_token', payload);
 };
 
 const ACTION_SET_SKIP_CONFIG = ({ commit }) => {

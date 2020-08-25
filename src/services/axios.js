@@ -9,8 +9,22 @@ axios.interceptors.response.use(
       (error?.response?.config?.url || '').includes('api.spotify')
     ) {
       try {
-        await refresh.spotify();
-        window.location.reload();
+        const refreshedAccessToken = await refresh.spotify();
+
+        if (error?.response?.config) {
+          const { config } = error.response;
+
+          return await axios({
+            url: config.url,
+            params: config.params,
+            method: config.method,
+            headers: {
+              Authorization: `Bearer ${refreshedAccessToken}`,
+            },
+          });
+        }
+
+        return Promise.reject(error);
       } catch (e) {
         return Promise.reject(error);
       }
