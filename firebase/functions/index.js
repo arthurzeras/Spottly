@@ -40,9 +40,16 @@ exports.spotifyAuthorize = functions.https.onCall(async (params) => {
   }
 });
 
-exports.spotifyRefreshToken = functions.https.onCall(async (params) => {
+exports.spotifyRefreshToken = functions.https.onCall(async ({ uid, refreshToken }) => {
   try {
-    const data = await localFunctions.spotifyRefreshToken(params, functions.config().spotify);
+    const data = await localFunctions.spotifyRefreshToken(refreshToken, functions.config().spotify);
+
+    if (uid) {
+      admin.database().ref(`users/${uid}/credentials/spotify`).update({
+        accessToken: data.access_token,
+      });
+    }
+
     return data;
   } catch (error) {
     const status = error.response ? error.response.status : 500;
