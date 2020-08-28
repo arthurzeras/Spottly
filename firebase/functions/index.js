@@ -36,6 +36,8 @@ exports.spotifyAuthorize = functions.https.onCall(async (params) => {
     const detail = error.response ? error.response.data.error : null;
     const message = error.response ? error.response.data.error_description : 'Internal Error';
 
+    functions.logger.error('❌ Spotify Authorize: ', error.message, error);
+
     throw new functions.https.HttpsError(code, message, detail);
   }
 });
@@ -56,6 +58,8 @@ exports.spotifyRefreshToken = functions.https.onCall(async ({ uid, refreshToken 
     const code = status === 400 ? 'invalid-argument' : 'internal';
     const detail = error.response ? error.response.data.error : null;
     const message = error.response ? error.response.data.error_description : 'Internal Error';
+
+    functions.logger.error('❌ Spotify Refresh Token: ', error.message, error);
 
     throw new functions.https.HttpsError(code, message, detail);
   }
@@ -213,6 +217,8 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
         ? 'Ops, você postou a pouco tempo, aguarde 15 minutos para postar novamente'
         : 'Desculpe, não foi possível publicar o tweet';
 
+    functions.logger.error('❌ Manually Post Tweet: ', error.message, error);
+
     throw new functions.https.HttpsError(code, message);
   }
 });
@@ -231,6 +237,8 @@ exports.getStatus = functions.https.onCall(async (params) => {
       code === 'failed-precondition'
         ? 'Você não tem permissão para executar essa ação'
         : 'Não foi possível executar essa ação';
+
+    functions.logger.error('❌ Get Status: ', error.message, error);
 
     throw new functions.https.HttpsError(code, message);
   }
