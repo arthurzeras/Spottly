@@ -3,7 +3,7 @@ import { Twitter } from './twitter';
 import * as admin from 'firebase-admin';
 import { User, Artist, History } from './types';
 import * as functions from 'firebase-functions';
-import { clearHistoryFromLastWeek } from './general';
+import { clearHistoryFromLastWeek, storePlaybackHistory } from './general';
 
 admin.initializeApp();
 const spotify = new Spotify();
@@ -156,3 +156,23 @@ export const postScheduler = functions
 
     functions.logger.log('✅ postScheduler ✅: Scheduler finalizado');
   })
+
+export const getHistoryScheduler = functions
+  // .https.onCall(async () => {
+  .runWith({ timeoutSeconds: 360, memory: '256MB' })
+  .pubsub.schedule('58 * * * *')
+  .timeZone('America/Sao_Paulo')
+  .onRun(async () => {
+    const snapshot = await admin.database().ref('users').once('value');
+    const users = snapshot.val();
+
+    const storeList = Object.keys(users)
+      .filter((user) => users[user].storeHistoryActivated)
+      .map((user) => storePlaybackHistory({ uid: user, ...users[user] }));
+
+    try {
+      await Promise.all(storeList);
+    } catch (error) {
+      functions.logger.error('❌ Get History Scheduler: ', error.message, error);
+    }
+  });

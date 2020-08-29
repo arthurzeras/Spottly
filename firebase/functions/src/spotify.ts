@@ -29,7 +29,7 @@ export class Spotify {
     this.clientBasicToken = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
   }
 
-  async getAccessToken({ code, redirectUri }: AccessTokenParams): Promise<AxiosRequestConfig> {
+  async getAccessToken({ code, redirectUri }: AccessTokenParams) {
     this.accountService.defaults.headers = {
       Authorization: `Basic ${this.clientBasicToken}`,
       'Content-Type': 'application/x-www-form-urlencoded',
@@ -44,7 +44,7 @@ export class Spotify {
     return this.accountService.post('token', data);
   }
 
-  async getRefreshedToken(refreshToken?: string): Promise<AxiosRequestConfig> {
+  async getRefreshedToken(refreshToken?: string) {
     const data = new URLSearchParams();
     data.append('grant_type', 'refresh_token');
     data.append('refresh_token', this.userCredentials.refreshToken || refreshToken || '');
@@ -56,11 +56,11 @@ export class Spotify {
     return this.accountService.post('token', data);
   }
 
-  async getTopArtists(credentials: SpotifyCredentials): Promise<AxiosRequestConfig> {
+  async getTopArtists(credentials: SpotifyCredentials): Promise<any> {
     this.userCredentials = credentials || {};
 
     try {
-      const config = {
+      const config: AxiosRequestConfig = {
         params: {
           limit: 5,
           time_range: 'short_term',
@@ -83,6 +83,38 @@ export class Spotify {
         this.userCredentials.accessToken = data.access_token;
 
         return this.getTopArtists(this.userCredentials);
+      }
+
+      return Promise.reject(error);
+    }
+  }
+
+  async getPlaybackHistory(credentials: SpotifyCredentials, timestampAfter: number|null): Promise<any> {
+    this.userCredentials = credentials || {};
+
+    try {
+      const config: AxiosRequestConfig = {
+        params: {
+          limit: 50,
+          after: timestampAfter,
+        },
+      };
+
+      const token = this.userCredentials.accessToken;
+
+      this.webService.defaults.headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await this.webService.get('me/player/recently-played', config);
+      return response;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        const { data } = await this.getRefreshedToken();
+
+        this.userCredentials.accessToken = data.access_token;
+
+        return this.getPlaybackHistory(this.userCredentials, timestampAfter);
       }
 
       return Promise.reject(error);
