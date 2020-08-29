@@ -33,7 +33,7 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
 
     return data;
   } catch (error) {
-    functions.logger.error('❌ spotifyAuthorize ❌', error);
+    functions.logger.error('❌ spotifyAuthorize ❌', error.message, error);
 
     const status = error.response ? error.response.status : 500;
     const code = status === 400 ? 'invalid-argument' : 'internal';
@@ -41,3 +41,32 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
     throw new functions.https.HttpsError(code, 'Erro interno');
   }
 });
+
+export const spotifyRefreshToken = functions.https.onCall(async (params) => {
+  try {
+    const snapshot = await admin.database()
+      .ref(`users/${params.uid}/credentials/spotify/refreshToken`)
+      .once('value');
+
+    const refreshToken = snapshot.val();
+
+    if (!refreshToken) {
+      throw new functions.https.HttpsError('invalid-argument', 'Refresh token inválido');
+    }
+
+    const { data } = await spotify.getRefreshedToken(refreshToken);
+
+    await admin.database().ref(`users/${params.uid}/credentials/spotify`).update({
+      accessToken: data.access_token,
+    });
+
+    functions.logger.log('✅ spotifyRefreshToken ✅');
+
+    return data;
+  } catch (error) {
+    const status = error.response ? error.response.status : 500;
+    const code = status === 400 ? 'invalid-argument' : 'internal';
+
+    throw new functions.https.HttpsError(code, error.message || 'Erro interno');
+  }
+})

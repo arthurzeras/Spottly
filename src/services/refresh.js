@@ -2,15 +2,11 @@ import { firebase } from '@/firebase';
 
 async function spotify() {
   try {
-    const refreshToken = localStorage.getItem('spotify_refresh');
-
-    if (!refreshToken) throw new Error();
-
     const refreshAction = firebase.functions().httpsCallable('spotifyRefreshToken');
 
     const { uid } = firebase.auth().currentUser;
 
-    const { data } = await refreshAction({ refreshToken, uid });
+    const { data } = await refreshAction({ uid });
 
     localStorage.setItem('spotify_token', data.access_token);
 
