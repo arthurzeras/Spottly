@@ -2,8 +2,7 @@ import axios, { AxiosInstance } from 'axios';
 import * as functions from 'firebase-functions';
 
 export interface AccessTokenParams {
-  grant_type: string,
-  redirect_uri: string,
+  redirectUri: string,
   [code: string]: string,
 }
 
@@ -25,7 +24,7 @@ export class Spotify {
     this.service.defaults.headers = headers;
   }
 
-  async getAccessToken(payload: AccessTokenParams): Promise<any> {
+  async getAccessToken({ code, redirectUri }: AccessTokenParams): Promise<any> {
     const clientCode = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
 
     this.setHeaders({
@@ -35,7 +34,9 @@ export class Spotify {
 
     const data = new URLSearchParams();
 
-    Object.keys(payload).forEach((key) => data.append(key, payload[key]));
+    data.append('code', code);
+    data.append('redirect_uri', redirectUri);
+    data.append('grant_type', 'authorization_code');
 
     return this.service.post('token', data);
   }

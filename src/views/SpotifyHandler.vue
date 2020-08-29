@@ -46,8 +46,7 @@ export default {
           const params = {
             code,
             uid: this.user.uid,
-            grant_type: 'authorization_code',
-            redirect_uri: `${window.location.origin}/spotify/callback`,
+            redirectUri: `${window.location.origin}/spotify/callback`,
           };
 
           const authorize = this.$firebase.functions().httpsCallable('spotifyAuthorize');
