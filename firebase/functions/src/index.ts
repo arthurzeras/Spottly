@@ -84,6 +84,64 @@ export const spotifyRefreshToken = functions.https.onCall(async (params) => {
   }
 })
 
+export const manuallyPostTweet = functions.https.onCall(async (params) => {
+  try {
+    const snapshot = await admin.database().ref(`users/${params.uid}`).once('value');
+    const user: User = snapshot.val();
+
+    if (user?.log?.lastPostTime) {
+      const now = Date.now();
+      const lastPostTime = new Date(user.log.lastPostTime).getTime();
+
+      if (now - lastPostTime < 900000) {
+        throw new functions.https.HttpsError(
+          'failed-precondition',
+          'Ops, você postou a pouco tempo, aguarde 15 minutos para postar novamente'
+        );
+      }
+    }
+
+    const hasSpotifyCredentials = (
+      Boolean(user?.credentials?.spotify?.accessToken) &&
+      Boolean(user?.credentials?.spotify?.refreshToken)
+    );
+
+    if (!hasSpotifyCredentials) {
+      throw new functions.https.HttpsError(
+        'not-found',
+        'Não foi encontrado dados de conexão com o Spotify, conecte novamente.'
+      );
+    }
+
+    const { data } = await spotify.getTopArtists(user.credentials.spotify || {});
+
+    if (!data.items.length) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'Você não tem registros de artistas ouvidos ultimamente'
+      );
+    }
+
+    const artists: Artist[] = data.items.map((artist: any) => ({
+      quantity: 0,
+      name: artist.name,
+    }));
+
+    await twitter.postTweet(user.credentials.twitter, artists);
+
+    await admin.database().ref(`users/${params.uid}/log`).update({
+      lastPostTime: new Date().toISOString(),
+    });
+  } catch (error) {
+    const code = error?.code || 'internal';
+    const message = error?.message || 'Desculpe, não foi possível publicar o tweet';
+
+    functions.logger.error('❌ manuallyPostTweet: ', error.message, error);
+
+    throw new functions.https.HttpsError(code, message);
+  }
+});
+
 /**
  * Scheduler que roda todo dia as 20 horas.
  * - Busca usuários no banco com a postagem automática ativada;
@@ -109,9 +167,10 @@ export const postScheduler = functions
       .reduce((listUsers: User[], user: string) => {
         const current: User = users[user];
 
-        const credentials = current?.credentials?.spotify || {};
-        const hasSpotifyCredentials =
-          Boolean(credentials.accessToken) && Boolean(credentials.refreshToken);
+        const hasSpotifyCredentials = (
+          Boolean(current?.credentials?.spotify?.accessToken) &&
+          Boolean(current?.credentials?.spotify?.refreshToken)
+        );
 
         if (current.twitterActive && days[today] === current.postDay && hasSpotifyCredentials) {
           listUsers.push({ ...current, uid: user });
@@ -147,7 +206,7 @@ export const postScheduler = functions
           name: artist.name,
         }));
 
-        twitter.postTweet(user.credentials.twitter, artists);
+        await twitter.postTweet(user.credentials.twitter, artists);
       } catch (error) {
         const log = `❌ postScheduler ❌ | user: ${user.uid} | name: ${user.metadata.displayName} | `;
         functions.logger.error(log, error.message, error);
