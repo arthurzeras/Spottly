@@ -83,6 +83,14 @@ export const spotifyRefreshToken = functions.https.onCall(async (params) => {
   }
 })
 
+/**
+ * Scheduler que roda todo dia as 20 horas.
+ * - Busca usuários no banco com a postagem automática ativada;
+ * - Verifica se tem alguem com a postagem ativada para o dia atual;
+ * - Verifica se existem as credenciais do Spotify salvas;
+ * - Verifica se é para postar no modo History ou no modo Spotify
+ * - Tenta fazer a postagem de cada usuário
+ */
 export const postScheduler = functions
   // .https.onCall(async () => {
   .runWith({ timeoutSeconds: 360 })
