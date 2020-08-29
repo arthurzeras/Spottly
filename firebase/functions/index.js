@@ -175,7 +175,7 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
 
     const user = snapshot.val();
 
-    if (user.log && user.log.lastPostTime) {
+    if (Object.prototype.hasOwnProperty(user, 'log') && user.log.lastPostTime) {
       const now = Date.now();
       const lastPostTime = new Date(user.log.lastPostTime).getTime();
 
@@ -189,6 +189,8 @@ exports.manuallyPostTweet = functions.https.onCall(async (params) => {
       Boolean(credentials.accessToken) && Boolean(credentials.refreshToken);
 
     if (!hasSpotifyCredentials) throw new Error('internal');
+
+    const { accessToken, refreshToken } = credentials;
 
     const artists = await localFunctions.getSpotifyTopArtists(
       { accessToken, refreshToken },
