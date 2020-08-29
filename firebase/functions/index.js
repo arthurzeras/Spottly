@@ -144,7 +144,7 @@ exports.postScheduler = functions
 
 exports.getHistoryScheduler = functions
   .runWith({ timeoutSeconds: 360 })
-  .pubsub.schedule('00 * * * *')
+  .pubsub.schedule('58 * * * *')
   .timeZone('America/Sao_Paulo')
   .onRun(async () => {
     const snapshot = await admin.database().ref('users').once('value');
