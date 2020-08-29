@@ -205,7 +205,7 @@ async function postTweetByHistory({ uid, admin, credentials }) {
 
   return twitterPostTopArtists({
     credentials,
-    artists: artists.map((artist) => `${artist.name} (${artist.quantity})`),
+    artists: artists.map((artist) => ({ name: `${artist.name} (${artist.quantity})` })),
   });
 }
 
