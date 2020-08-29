@@ -38,7 +38,7 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
   } catch (error) {
     functions.logger.error('❌ spotifyAuthorize ❌', error.message, error);
 
-    const status = error.response ? error.response.status : 500;
+    const status = error?.response?.status || 500;
     const code = status === 400 ? 'invalid-argument' : 'internal';
 
     throw new functions.https.HttpsError(code, 'Erro interno');
@@ -76,7 +76,7 @@ export const spotifyRefreshToken = functions.https.onCall(async (params) => {
 
     return data;
   } catch (error) {
-    const status = error.response ? error.response.status : 500;
+    const status = error?.response?.status || 500;
     const code = status === 400 ? 'invalid-argument' : 'internal';
 
     throw new functions.https.HttpsError(code, error.message || 'Erro interno');
@@ -123,7 +123,8 @@ export const postScheduler = functions
 
           const history: History[] = Object.keys(snapshot.val()).map((key) => snapshot.val()[key]);
 
-          return twitter.postTweetFromHistory(user.credentials.twitter, history);
+          twitter.postTweetFromHistory(user.credentials.twitter, history);
+          continue;
         }
 
         const { data } = await spotify.getTopArtists(user.credentials.spotify || {});
