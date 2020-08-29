@@ -1,5 +1,6 @@
 import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 import * as functions from 'firebase-functions';
+import { SpotifyCredentials } from './types';
 
 export interface AccessTokenParams {
   redirectUri: string,
@@ -9,12 +10,18 @@ export interface AccessTokenParams {
 export class Spotify {
   clientId: string;
   clientSecret: string;
-  service: AxiosInstance;
   clientBasicToken: string;
+  webService: AxiosInstance;
+  accountService: AxiosInstance;
+  userCredentials: SpotifyCredentials = {};
 
   constructor() {
-    this.service = axios.create({
-      baseURL: 'https://accounts.spotify.com/api/'
+    this.accountService = axios.create({
+      baseURL: 'https://accounts.spotify.com/api/',
+    });
+
+    this.webService = axios.create({
+      baseURL: 'https://api.spotify.com/v1/',
     });
 
     this.clientId = functions.config().spotify.id;
@@ -22,15 +29,11 @@ export class Spotify {
     this.clientBasicToken = Buffer.from(`${this.clientId}:${this.clientSecret}`).toString('base64');
   }
 
-  private setHeaders(headers: any) {
-    this.service.defaults.headers = headers;
-  }
-
   async getAccessToken({ code, redirectUri }: AccessTokenParams): Promise<AxiosRequestConfig> {
-    this.setHeaders({
+    this.accountService.defaults.headers = {
       Authorization: `Basic ${this.clientBasicToken}`,
       'Content-Type': 'application/x-www-form-urlencoded',
-    });
+    };
 
     const data = new URLSearchParams();
 
@@ -38,18 +41,51 @@ export class Spotify {
     data.append('redirect_uri', redirectUri);
     data.append('grant_type', 'authorization_code');
 
-    return this.service.post('token', data);
+    return this.accountService.post('token', data);
   }
 
-  async getRefreshedToken(refreshToken: string): Promise<AxiosRequestConfig> {
+  async getRefreshedToken(refreshToken?: string): Promise<AxiosRequestConfig> {
     const data = new URLSearchParams();
     data.append('grant_type', 'refresh_token');
-    data.append('refresh_token', refreshToken);
+    data.append('refresh_token', this.userCredentials.refreshToken || refreshToken || '');
 
-    this.setHeaders({
+    this.accountService.defaults.headers = {
       Authorization: `Basic ${this.clientBasicToken}`,
-    });
+    };
 
-    return this.service.post('token', data);
+    return this.accountService.post('token', data);
+  }
+
+  async getTopArtists(credentials: SpotifyCredentials): Promise<AxiosRequestConfig> {
+    this.userCredentials = credentials || {};
+
+    try {
+      const config = {
+        params: {
+          limit: 5,
+          time_range: 'short_term',
+        },
+      };
+
+      const token = this.userCredentials.accessToken;
+
+      this.webService.defaults.headers = {
+        Authorization: `Bearer ${token}`,
+      };
+
+      const response = await this.webService.get('me/top/artists', config);
+
+      return response;
+    } catch (error) {
+      if (error?.response?.status === 401) {
+        const { data } = await this.getRefreshedToken();
+
+        this.userCredentials.accessToken = data.access_token;
+
+        return this.getTopArtists(this.userCredentials);
+      }
+
+      return Promise.reject(error);
+    }
   }
 }

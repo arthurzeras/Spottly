@@ -1,9 +1,12 @@
 import { Spotify } from './spotify';
+import { Twitter } from './twitter';
 import * as admin from 'firebase-admin';
+import { User, Artist, History } from './types';
 import * as functions from 'firebase-functions';
 
 admin.initializeApp();
 const spotify = new Spotify();
+const twitter = new Twitter();
 
 /**
  * Busca os tokens de acesso do Spotify, salva no banco e os retorna.
@@ -79,3 +82,65 @@ export const spotifyRefreshToken = functions.https.onCall(async (params) => {
     throw new functions.https.HttpsError(code, error.message || 'Erro interno');
   }
 })
+
+export const postScheduler = functions
+  // .https.onCall(async () => {
+  .runWith({ timeoutSeconds: 360 })
+  .pubsub.schedule('0 20 * * *')
+  .timeZone('America/Sao_Paulo')
+  .onRun(async () => {
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const today = new Date().getDay();
+
+    const snapshot = await admin.database().ref('users').once('value');
+    const users: { [key: string]: User } = snapshot.val();
+
+    const usersToPostToday = Object.keys(users)
+      .reduce((listUsers: User[], user: string) => {
+        const current: User = users[user];
+
+        const credentials = current?.credentials?.spotify || {};
+        const hasSpotifyCredentials =
+          Boolean(credentials.accessToken) && Boolean(credentials.refreshToken);
+
+        if (current.twitterActive && days[today] === current.postDay && hasSpotifyCredentials) {
+          listUsers.push({ ...current, uid: user });
+        }
+
+        return listUsers;
+      }, []);
+
+    if (!usersToPostToday.length) {
+      return functions.logger.info('🤷‍♂️ postScheduler 🤷‍♂️ Sem nada para postar hoje!');
+    }
+
+    for (const user of usersToPostToday) {
+      try {
+        if (user.storeHistoryActivated) {
+          const snapshot = await admin.database().ref(`history/${user.uid}`).once('value');
+
+          if (!snapshot.val()) continue;
+
+          const history: History[] = Object.keys(snapshot.val()).map((key) => snapshot.val()[key]);
+
+          return twitter.postTweetFromHistory(user.credentials.twitter, history);
+        }
+
+        const { data } = await spotify.getTopArtists(user.credentials.spotify || {});
+
+        if (!data.items.length) continue;
+
+        const artists: Artist[] = data.items.map((artist: any) => ({
+          quantity: 0,
+          name: artist.name,
+        }));
+
+        twitter.postTweet(user.credentials.twitter, artists);
+      } catch (error) {
+        const log = `❌ postScheduler ❌ | user: ${user.uid} | name: ${user.metadata.displayName} | `;
+        functions.logger.error(log, error.message, error);
+      }
+    }
+
+    functions.logger.log('✅ postScheduler ✅: Scheduler finalizado');
+  })
