@@ -3,6 +3,7 @@ import { Twitter } from './twitter';
 import * as admin from 'firebase-admin';
 import { User, Artist, History } from './types';
 import * as functions from 'firebase-functions';
+import { clearHistoryFromLastWeek } from './general';
 
 admin.initializeApp();
 const spotify = new Spotify();
@@ -88,8 +89,9 @@ export const spotifyRefreshToken = functions.https.onCall(async (params) => {
  * - Busca usuários no banco com a postagem automática ativada;
  * - Verifica se tem alguem com a postagem ativada para o dia atual;
  * - Verifica se existem as credenciais do Spotify salvas;
- * - Verifica se é para postar no modo History ou no modo Spotify
- * - Tenta fazer a postagem de cada usuário
+ * - Verifica se é para postar no modo History ou no modo Spotify;
+ * - Tenta fazer a postagem de cada usuário;
+ * - Se estiver no modo History, também remove o conteúdo da última semana;
  */
 export const postScheduler = functions
   // .https.onCall(async () => {
@@ -131,7 +133,8 @@ export const postScheduler = functions
 
           const history: History[] = Object.keys(snapshot.val()).map((key) => snapshot.val()[key]);
 
-          twitter.postTweetFromHistory(user.credentials.twitter, history);
+          await twitter.postTweetFromHistory(user.credentials.twitter, history);
+          await clearHistoryFromLastWeek(user.uid || '');
           continue;
         }
 
