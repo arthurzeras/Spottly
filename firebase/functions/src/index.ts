@@ -6,7 +6,7 @@ admin.initializeApp();
 const spotify = new Spotify();
 
 /**
- * Retorna os tokens de acesso do Spotify.
+ * Busca os tokens de acesso do Spotify, salva no banco e os retorna.
  *
  * Ref: https://developer.spotify.com/documentation/general/guides/authorization-guide/
  *
@@ -42,6 +42,15 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
   }
 });
 
+/**
+ * Busca o refresh token salvo no banco, faz o refresh, salva o novo access token e o retorna.
+ *
+ * Ref: https://developer.spotify.com/documentation/general/guides/authorization-guide/
+ *
+ * @params {
+ *  @string uid: Firebase id do usuário
+ * }
+ */
 export const spotifyRefreshToken = functions.https.onCall(async (params) => {
   try {
     const snapshot = await admin.database()
