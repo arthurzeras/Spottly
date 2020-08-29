@@ -10,16 +10,22 @@ import { mapActions, mapState } from 'vuex';
 export default {
   name: 'SpotifyHandler',
 
-  mounted() {
-    this.getSpotifyTokens();
-  },
-
   watch: {
     loader: {
       immediate: true,
       handler(state) {
         if (!state) {
           this.ACTION_SET_LOADER(true);
+        }
+      },
+    },
+
+    user: {
+      deep: true,
+      immediate: true,
+      handler(user) {
+        if (user.uid) {
+          this.getSpotifyTokens();
         }
       },
     },
@@ -39,6 +45,7 @@ export default {
         if (code) {
           const params = {
             code,
+            uid: this.user.uid,
             grant_type: 'authorization_code',
             redirect_uri: `${window.location.origin}/spotify/callback`,
           };
@@ -47,17 +54,7 @@ export default {
 
           const { data } = await authorize(params);
 
-          localStorage.setItem('spotify_token', data.access_token);
           localStorage.setItem('spotify_refresh', data.refresh_token);
-
-          const databaseRef = this.$firebase
-            .database()
-            .ref(`users/${this.user.uid}/credentials/spotify`);
-
-          databaseRef.update({
-            accessToken: data.access_token,
-            refreshToken: data.refresh_token,
-          });
 
           this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(data.access_token);
 
