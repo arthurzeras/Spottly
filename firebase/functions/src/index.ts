@@ -216,17 +216,20 @@ export const postScheduler = functions
       }, []);
 
     if (!usersToPostToday.length) {
-      return functions.logger.info('🤷‍♂️ postScheduler 🤷‍♂️ Sem nada para postar hoje!');
+      functions.logger.info('🤷‍♂️ postScheduler 🤷‍♂️ Sem nada para postar hoje!');
+      return;
     }
 
     for (const user of usersToPostToday) {
       try {
         if (user.storeHistoryActivated) {
-          const snapshot = await admin.database().ref(`history/${user.uid}`).once('value');
+          const historySnapshot = await admin.database()
+            .ref(`history/${user.uid}`).once('value');
 
-          if (!snapshot.val()) continue;
+          if (!historySnapshot.val()) continue;
 
-          const history: History[] = Object.keys(snapshot.val()).map((key) => snapshot.val()[key]);
+          const history: History[] = Object.keys(historySnapshot.val())
+            .map((key) => historySnapshot.val()[key]);
 
           await twitter.postTweetFromHistory(user.credentials.twitter, history);
           await clearHistoryFromLastWeek(user.uid || '');

@@ -30,7 +30,7 @@ export class Twitter {
         _greater.length > name.length ? _greater : name
       ), '');
 
-      const greater = artists.findIndex((artists) => artists.name === greaterName);
+      const greater = artists.findIndex((artist) => artist.name === greaterName);
 
       artists[greater].name = `${greaterName.substring(0, greaterName.length - 4).trim()}...`;
 
