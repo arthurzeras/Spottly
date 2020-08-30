@@ -136,7 +136,28 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
     const code = error?.code || 'internal';
     const message = error?.message || 'Desculpe, não foi possível publicar o tweet';
 
-    functions.logger.error('❌ manuallyPostTweet: ', error.message, error);
+    functions.logger.error('❌ manuallyPostTweet ❌ ', error.message, error);
+
+    throw new functions.https.HttpsError(code, message);
+  }
+});
+
+exports.getStatus = functions.https.onCall(async (params) => {
+  try {
+    if (params.uid !== functions.config().admin.uid) {
+      throw new functions.https.HttpsError(
+        'permission-denied',
+        'Você não tem permissão para executar essa ação'
+      );
+    }
+
+    const snapshot = await admin.database().ref('users').once('value');
+    return snapshot.val();
+  } catch (error) {
+    const code = error?.code || 'internal';
+    const message = error?.message || 'Não foi possível executar essa ação';
+
+    functions.logger.error('❌ getStatus ❌ ', error.message, error);
 
     throw new functions.https.HttpsError(code, message);
   }
