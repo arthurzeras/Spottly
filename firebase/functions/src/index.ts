@@ -84,6 +84,13 @@ export const spotifyRefreshToken = functions.https.onCall(async (params) => {
   }
 })
 
+/**
+ * Posta o tweet manualmente, com os dados do momento em que é chamada
+ *
+ * @params {
+ *  @string uid
+ * }
+ */
 export const manuallyPostTweet = functions.https.onCall(async (params) => {
   try {
     const snapshot = await admin.database().ref(`users/${params.uid}`).once('value');
@@ -142,6 +149,14 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
   }
 });
 
+/**
+ * Função somente para uso no ambiente de status (admin).
+ * Retorna dados de todos os usuários cadastrados.
+ *
+ * @params {
+ *  @string uid
+ * }
+ */
 exports.getStatus = functions.https.onCall(async (params) => {
   try {
     if (params.uid !== functions.config().admin.uid) {
@@ -237,6 +252,12 @@ export const postScheduler = functions
     functions.logger.log('✅ postScheduler ✅: Scheduler finalizado');
   })
 
+/**
+ * Scheduler para buscar o histórico de músicas ouvidas dos usuarios
+ * com a opção storeHistoryActivated = true.
+ *
+ * Roda toda hora no minuto 58 de cada uma.
+ */
 export const getHistoryScheduler = functions
   // .https.onCall(async () => {
   .runWith({ timeoutSeconds: 360, memory: '256MB' })

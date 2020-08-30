@@ -1,6 +1,6 @@
-import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
-import * as functions from 'firebase-functions';
 import { SpotifyCredentials } from './types';
+import * as functions from 'firebase-functions';
+import axios, { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 export interface AccessTokenParams {
   redirectUri: string,
