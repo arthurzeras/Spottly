@@ -12,6 +12,8 @@ export class Twitter {
   }
 
   private formatTweet(artists: Artist[]): string {
+    if (artists.length) return '';
+
     const base = (a: string = ''): string => (
       `Meus top artistas do Spotify nas últimas semanas:\n\n${a}\n\nvia #Spottly spott-ly.web.app`
     );
@@ -47,6 +49,13 @@ export class Twitter {
 
   postTweet(credentials: TwitterCredentials, artists: Artist[]) {
     const status = this.formatTweet(artists);
+
+    if (!status) {
+      throw new functions.https.HttpsError(
+        'failed-precondition',
+        'Não há nenhum artista para ser postado'
+      );
+    }
 
     const options: TwitterOptions = {
       consumer_key: this.consumerKey,
