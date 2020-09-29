@@ -12,7 +12,7 @@ export class Twitter {
   }
 
   private formatTweet(artists: Artist[]): string {
-    if (artists.length) return '';
+    if (!artists.length) return '';
 
     const base = (a: string = ''): string => (
       `Meus top artistas do Spotify nas últimas semanas:\n\n${a}\n\nvia #Spottly spott-ly.web.app`
