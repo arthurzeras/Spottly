@@ -1,6 +1,24 @@
 <template>
-  <article class="twitter-status">
-    <h2 class="twitter-status__title">
+  <router-link :to="{ name: 'Settings' }" class="twitter-status">
+    <header class="twitter-status__header">
+      <i class="fa fa-robot"></i>
+      <h2 class="twitter-status__header--title">Postagem automática no Twitter</h2>
+    </header>
+
+    <div class="twitter-status__body">
+      <div class="twitter-status__body--columns">
+        <div class="twitter-status__body--info" v-html="statusText" />
+        <small class="twitter-status__body--day-info" v-if="active">{{ dayText }}</small>
+      </div>
+
+      <div class="twitter-status__body--columns">
+        <button class="twitter-status__body--btn-configure">
+          <i class="fa fa-cog"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- <h2 class="twitter-status__title">
       Postagem automática no twitter
     </h2>
 
@@ -33,7 +51,7 @@
           Tweetar agora
         </button>
       </div>
-    </template>
+    </template> -->
 
     <app-modal title="Dia de postagem" ref="changeDayModal">
       <div class="twitter-status__post-day">
@@ -52,7 +70,7 @@
         </button>
       </template>
     </app-modal>
-  </article>
+  </router-link>
 </template>
 
 <script>
@@ -170,7 +188,55 @@ export default {
 
 <style lang="scss">
 .twitter-status {
-  text-align: center;
+  text-decoration: none;
+  padding: 20px 15px;
+  border-radius: 20px;
+  width: calc(100vw - 30px);
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.3);
+
+  &__header {
+    display: flex;
+    align-items: center;
+    color: var(--neutral-2);
+
+    &--title {
+      line-height: 1;
+      font-size: 1rem;
+      margin: 0 0 0 10px;
+      font-weight: normal;
+    }
+  }
+
+  &__body {
+    display: flex;
+    margin-top: 20px;
+    font-size: 1.2rem;
+    justify-content: space-between;
+
+    &--info {
+      line-height: 1;
+      font-weight: bold;
+      color: var(--primary);
+    }
+
+    &--day-info {
+      line-height: 1;
+      font-size: 0.8rem;
+      color: var(--neutral-2);
+    }
+
+    &--btn-configure {
+      border: none;
+      line-height: 1;
+      font-size: 2rem;
+      box-shadow: none;
+      background-color: transparent;
+
+      .fa {
+        color: var(--neutral);
+      }
+    }
+  }
 
   &__button {
     &-status {
