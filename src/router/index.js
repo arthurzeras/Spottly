@@ -20,7 +20,7 @@ const routes = [
     name: 'Settings',
     path: '/settings',
     meta: { requireAuth: true, icon: 'settings', displayTitle: 'Ajustes' },
-    component: () => import(/* webpackChunkName: "Settings" */ '../views/Settings.vue'),
+    component: () => import(/* webpackChunkName: "Settings" */ '../views/settings/Settings.vue'),
   },
   {
     name: 'Tops',
