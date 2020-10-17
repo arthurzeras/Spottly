@@ -3,7 +3,6 @@
     <router-link :to="{ name: 'Dashboard' }" class="header__logo">
       <img src="~@/assets/img/logo.png" alt="Logo" class="header__logo-img" />
       <span class="header__logo-title">Spottly</span>
-      <span class="header__logo-beta-info">BETA</span>
     </router-link>
 
     <nav class="header__nav">
