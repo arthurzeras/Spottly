@@ -5,7 +5,11 @@
       <h2 class="twitter-status__header--title">Postagem automática no Twitter</h2>
     </header>
 
-    <div class="twitter-status__body">
+    <div class="twitter-status__loading" v-if="loading">
+      <span class="fas fa-spin fa-circle-notch fa-2x" />
+    </div>
+
+    <div class="twitter-status__body" v-else>
       <div class="twitter-status__body--columns">
         <div class="twitter-status__body--info" v-html="statusText" />
         <small class="twitter-status__body--day-info" v-if="active">{{ dayText }}</small>
@@ -27,10 +31,6 @@
     </div>
 
     <template v-else>
-      <div class="twitter-status__info">
-        <span v-html="statusText"></span>
-        <span v-if="active"> - {{ dayText }}</span>
-      </div>
 
       <div class="twitter-status__buttons">
         <button class="twitter-status__button-status" @click="toggleStatus(true)">
@@ -44,12 +44,6 @@
 
       <div class="twitter-status__disclaimer">
         As postagens automáticas acontecem no dia configurado as 20 horas horário de Brasília.
-      </div>
-
-      <div class="twitter-status__post-now">
-        <button class="twitter-status__post-now__btn" @click="$emit('post-now')">
-          Tweetar agora
-        </button>
       </div>
     </template> -->
 
@@ -196,6 +190,7 @@ export default {
 
   &__header {
     display: flex;
+    margin-bottom: 20px;
     align-items: center;
     color: var(--neutral-2);
 
@@ -207,9 +202,13 @@ export default {
     }
   }
 
+  &__loading {
+    text-align: center;
+    color: var(--primary);
+  }
+
   &__body {
     display: flex;
-    margin-top: 20px;
     font-size: 1.2rem;
     justify-content: space-between;
 

@@ -7,7 +7,7 @@
     <template v-else>
       <h1>Olá, {{ user.displayName }}</h1>
 
-      <twitter-status @post-now="postCurrentTopArtists()" />
+      <twitter-status />
 
       <top-artists />
 
