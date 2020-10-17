@@ -13,6 +13,7 @@
       <div class="twitter-status__body--columns">
         <div class="twitter-status__body--info" v-html="statusText" />
         <small class="twitter-status__body--day-info" v-if="active">{{ dayText }}</small>
+        <small>Clique aqui para ativar</small>
       </div>
 
       <div class="twitter-status__body--columns">
@@ -21,62 +22,15 @@
         </button>
       </div>
     </div>
-
-    <!-- <h2 class="twitter-status__title">
-      Postagem automática no twitter
-    </h2>
-
-    <div class="twitter-status__loading" v-if="loading">
-      <span class="fas fa-spin fa-circle-notch fa-2x" />
-    </div>
-
-    <template v-else>
-
-      <div class="twitter-status__buttons">
-        <button class="twitter-status__button-status" @click="toggleStatus(true)">
-          {{ btnChangeStatusText }}
-        </button>
-
-        <button class="twitter-status__button-day" v-if="active" @click="handleUpdateDay()">
-          Alterar dia
-        </button>
-      </div>
-
-      <div class="twitter-status__disclaimer">
-        As postagens automáticas acontecem no dia configurado as 20 horas horário de Brasília.
-      </div>
-    </template> -->
-
-    <app-modal title="Dia de postagem" ref="changeDayModal">
-      <div class="twitter-status__post-day">
-        <label class="twitter-status__post-day__label">
-          Selecione o dia para as postagens:
-        </label>
-
-        <select class="twitter-status__select" v-model="postDay">
-          <option :key="key" :value="key" v-for="(day, key) in weekDays">{{ day }}</option>
-        </select>
-      </div>
-
-      <template slot="footer">
-        <button class="twitter-status__post-day__button" @click="toggleStatus()">
-          {{ modalBtnText }}
-        </button>
-      </template>
-    </app-modal>
   </router-link>
 </template>
 
 <script>
 import { mapState } from 'vuex';
 import WeekDays from '@/mixins/week';
-import Messages from '@/utils/messages';
-import AppModal from '@/components/global/Modal.vue';
 
 export default {
   name: 'TwitterStatus',
-
-  components: { AppModal },
 
   mixins: [WeekDays],
 
@@ -97,14 +51,6 @@ export default {
 
     statusText() {
       return this.active ? 'Ativada' : 'Desativada';
-    },
-
-    btnChangeStatusText() {
-      return this.active ? 'Desativar' : 'Ativar';
-    },
-
-    modalBtnText() {
-      return this.updatingDay ? 'Alterar Dia' : 'Ativar';
     },
 
     dayText() {
@@ -135,46 +81,6 @@ export default {
       } finally {
         this.loading = false;
       }
-    },
-
-    async toggleStatus(openChangeDayModal = false) {
-      if (!this.active && openChangeDayModal) {
-        this.$refs.changeDayModal.open();
-        return;
-      }
-
-      try {
-        await this.databaseRef.update({
-          postDay: this.postDay,
-          twitterActive: !this.updatingDay ? !this.active : true,
-        });
-
-        this.$refs.changeDayModal.close();
-
-        let message = Messages.Success.ACTIVE_AUTO_POST;
-
-        if (this.active) message = Messages.Success.DISABLE_AUTO_POST;
-        if (this.updatingDay) message = Messages.Success.CHANGE_POST_DAY;
-
-        this.$root.$emit('Alert::show', message, 'success');
-
-        this.updatingDay = false;
-
-        this.getData();
-      } catch (error) {
-        const action = this.active ? 'ACTIVE' : 'DISABLE';
-
-        const message = this.updatingDay
-          ? Messages.Failed.CHANGE_POST_DAY
-          : Messages.Failed[`${action}_AUTO_POST`];
-
-        this.$root.$emit('Alert::show', message);
-      }
-    },
-
-    async handleUpdateDay() {
-      this.updatingDay = true;
-      this.$refs.changeDayModal.open();
     },
   },
 };

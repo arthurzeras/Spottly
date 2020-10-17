@@ -79,19 +79,12 @@ export default {
       }
     },
 
-    async toggleStatus(openChangeDayModal = false) {
-      if (!this.active && openChangeDayModal) {
-        this.$refs.changeDayModal.open();
-        return;
-      }
-
+    async toggleStatus() {
       try {
         await this.databaseRef.update({
           postDay: this.postDay,
           twitterActive: !this.updatingDay ? !this.active : true,
         });
-
-        this.$refs.changeDayModal.close();
 
         let message = Messages.Success.ACTIVE_AUTO_POST;
 
@@ -100,9 +93,7 @@ export default {
 
         this.$root.$emit('Alert::show', message, 'success');
 
-        this.updatingDay = false;
-
-        this.getData();
+        this.$emit('close');
       } catch (error) {
         const action = this.active ? 'ACTIVE' : 'DISABLE';
 

@@ -19,7 +19,7 @@
     </button>
 
     <app-modal :title="currentItem.title" ref="modal">
-      <component :is="currentItem.component" />
+      <component :is="currentItem.component" @close="$refs.modal.close()" />
     </app-modal>
   </section>
 </template>
