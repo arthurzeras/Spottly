@@ -188,9 +188,9 @@ export default {
 
 <style lang="scss">
 .twitter-status {
-  text-decoration: none;
   padding: 20px 15px;
   border-radius: 20px;
+  text-decoration: none;
   width: calc(100vw - 30px);
   box-shadow: 0 3px 20px rgba(0, 0, 0, 0.3);
 

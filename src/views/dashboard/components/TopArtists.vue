@@ -1,38 +1,39 @@
 <template>
   <article class="top-artists">
-    <div class="top-artists-loading fa-2x" v-if="loading">
+    <div class="top-artists__loading fa-2x" v-if="loading">
       <span class="fas fa-spin fa-circle-notch" />
     </div>
 
-    <div class="top-artists-error" v-else-if="error">
+    <div class="top-artists__error" v-else-if="error">
       <div>Opa, ocorreu algum erro ao carregar os artistas mais ouvidos</div>
-      <button class="button" @click="getTopArtists()">Tentar novamente</button>
+      <button class="top-artists__error--button" @click="getTopArtists()">Tentar novamente</button>
     </div>
 
     <template v-else-if="artists.length">
-      <h3 class="top-artists-title">Meus top artistas das últimas semanas</h3>
+      <header class="top-artists__header">
+        <i class="fa fa-stream" />
+        <h2 class="top-artists__header--title">Meus top artistas das últimas semanas</h2>
+      </header>
 
-      <div class="top-artists-list">
-        <div class="top-artists-item" v-for="artist in artists" :key="artist.id">
+      <div class="top-artists__list">
+        <div class="top-artists__list--item" v-for="artist in artists" :key="artist.id">
           <img
             :alt="artist.name"
-            class="top-artists-image"
+            class="top-artists__list--item__image"
             :src="getSmallestImage(artist.images)"
           />
 
-          <span class="top-artists-name">{{ artist.name }}</span>
+          <span class="top-artists__list--item__name">{{ artist.name }}</span>
         </div>
 
-        <router-link :to="{ name: 'Tops' }" class="top-artists-item top-artists-item__more">
+        <router-link
+          :to="{ name: 'Tops' }"
+          class="top-artists__list--item top-artists__list--item__more"
+        >
           <span class="fa fa-chevron-circle-right fa-2x"></span>
 
-          <span class="top-artists-item__more-label">Ver Mais</span>
+          <span class="top-artists__list--item__more-label">Ver Mais</span>
         </router-link>
-      </div>
-
-      <div class="top-artists-disclaimer">
-        * Os dados são buscados do Spotify e exibidos na tela, o Spottly não mantém nenhum histórico
-        próprio.
       </div>
     </template>
 
@@ -108,117 +109,112 @@ export default {
 
 <style lang="scss">
 .top-artists {
-  width: 100%;
-  padding: 0 15px;
   margin-top: 15px;
+  padding: 20px 15px;
+  border-radius: 20px;
+  width: calc(100vw - 30px);
+  box-shadow: 0 3px 20px rgba(0, 0, 0, 0.3);
 
-  &-loading {
+  &__loading {
     text-align: center;
     color: var(--primary);
   }
 
-  &-error,
-  &-empty {
+  &__header {
+    display: flex;
+    margin-bottom: 20px;
+    align-items: center;
+    color: var(--neutral-2);
+
+    &--title {
+      line-height: 1;
+      font-size: 1rem;
+      margin: 0 0 0 10px;
+      font-weight: normal;
+    }
+  }
+
+  &__error,
+  &__empty {
     text-align: center;
   }
 
-  &-title {
-    margin: 0;
-    font-size: 1.5rem;
-    text-align: center;
+  &__error {
+    &--button {
+      @include button();
+      font-size: 0.9rem;
+      padding: 5px 20px;
+    }
   }
 
-  &-list {
-    width: 100vw;
+  &__list {
     display: flex;
     overflow-x: auto;
     margin-left: -15px;
     margin-right: -15px;
     justify-content: center;
-  }
 
-  &-item {
-    padding: 0 15px 10px 15px;
+    &--item {
+      padding: 0 15px 10px 15px;
 
-    &__more {
-      display: flex;
-      align-items: center;
-      color: var(--primary);
-      flex-direction: column;
-      text-decoration: none;
-      justify-content: center;
+      &__image {
+        height: 100px;
+        border-radius: 5px;
+      }
 
-      &-label {
-        margin-top: 5px;
+      &__name {
+        display: block;
+        line-height: 1.2;
+        font-size: 0.8rem;
+      }
+
+      &__more {
+        display: flex;
+        align-items: center;
+        color: var(--primary);
+        flex-direction: column;
+        text-decoration: none;
+        justify-content: center;
+
+        &-label {
+          margin-top: 5px;
+        }
       }
     }
-  }
-
-  &-image {
-    height: 100px;
-    border-radius: 5px;
-  }
-
-  &-name {
-    display: block;
-    line-height: 1.2;
-    font-size: 0.8rem;
-  }
-
-  &-disclaimer {
-    text-align: center;
-    font-size: 0.8rem;
-    font-style: italic;
-    color: var(--neutral-2);
   }
 }
 
 @media (max-width: 768px) {
   .top-artists {
-    &-title {
-      font-size: 1.2rem;
-    }
+    &__list {
+      &--item {
+        width: 30%;
+        flex: 0 0 30%;
+        text-align: center;
 
-    &-item {
-      width: 30%;
-      flex: 0 0 30%;
-      text-align: center;
-    }
-
-    &-image {
-      width: 100%;
-      height: auto;
-      border-radius: 5px;
+        &__image {
+          width: 100%;
+          height: auto;
+          border-radius: 5px;
+        }
+      }
     }
   }
 }
 
 @media (max-width: 375px) {
   .top-artists {
-    padding: 0 5px;
+    &__list {
+      &--item {
+        font-size: 0.9rem;
+        padding: 0 5px 2px 5px;
 
-    &-title {
-      font-size: 1rem;
-    }
-
-    &-list {
-      margin-left: -5px;
-      margin-right: -5px;
-    }
-
-    &-item {
-      font-size: 0.9rem;
-      padding: 0 5px 2px 5px;
-
-      &__more {
-        .fa-2x {
-          font-size: 1rem;
+        &__more {
+          .fa-2x {
+            font-size: 1rem;
+          }
         }
       }
-    }
-
-    &-disclaimer {
-      font-size: 0.7rem;
     }
   }
 }
