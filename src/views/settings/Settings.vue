@@ -186,4 +186,16 @@ export default {
     border: 1px solid var(--danger);
   }
 }
+
+@media (min-width: 1024px) {
+  .settings {
+    width: 60%;
+    margin: 0 auto;
+
+    &__btn-remove-account {
+      width: 30%;
+      margin: 0 auto;
+    }
+  }
+}
 </style>

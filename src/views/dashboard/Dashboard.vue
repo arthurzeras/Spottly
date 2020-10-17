@@ -98,4 +98,11 @@ export default {
     height: calc(100vh - 110px);
   }
 }
+
+@media (min-width: 1024px) {
+  .dashboard {
+    width: 60%;
+    margin: 0 auto;
+  }
+}
 </style>
