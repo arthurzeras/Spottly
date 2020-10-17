@@ -7,7 +7,7 @@
     </div>
 
     <div v-else-if="error" class="settings__error">
-      <button class="settings__error--btn">
+      <button class="settings__error--btn" @click="getData()">
         Tentar Novamente
       </button>
     </div>
@@ -26,7 +26,7 @@
         </li>
       </ul>
 
-      <button class="settings__btn-remove-account" @click="getData()">
+      <button class="settings__btn-remove-account" @click="removeAccount()">
         Excluir conta
       </button>
 
@@ -42,6 +42,7 @@ import { mapState } from 'vuex';
 import AutoPost from './components/AutoPost.vue';
 import AppModal from '@/components/global/Modal.vue';
 import StoreHistory from './components/StoreHistory.vue';
+import RemoveAccount from './components/RemoveAccount.vue';
 import DeactivateAutoPost from './components/DeactivateAutoPost.vue';
 
 export default {
@@ -51,6 +52,7 @@ export default {
     AutoPost,
     AppModal,
     StoreHistory,
+    RemoveAccount,
     DeactivateAutoPost,
   },
 
@@ -116,6 +118,13 @@ export default {
     setCurrentSetting(item) {
       this.currentItem = item;
       this.$refs.modal.open();
+    },
+
+    removeAccount() {
+      this.setCurrentSetting({
+        title: 'Excluir conta',
+        component: RemoveAccount,
+      });
     },
   },
 };
