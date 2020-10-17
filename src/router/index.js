@@ -17,6 +17,12 @@ const routes = [
     component: () => import(/* webpackChunkName: "Dashboard" */ '../views/dashboard/Dashboard.vue'),
   },
   {
+    name: 'Settings',
+    path: '/settings',
+    meta: { requireAuth: true, icon: 'settings', displayTitle: 'Ajustes' },
+    component: () => import(/* webpackChunkName: "Settings" */ '../views/Settings.vue'),
+  },
+  {
     name: 'Tops',
     path: '/tops',
     meta: { requireAuth: true, icon: 'stream', displayTitle: 'Tops' },
