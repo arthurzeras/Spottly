@@ -10,12 +10,15 @@
       <twitter-status @post-now="postCurrentTopArtists()" />
 
       <top-artists />
+
+      <manual-post />
     </template>
   </section>
 </template>
 
 <script>
 import TopArtists from './components/TopArtists.vue';
+import ManualPost from './components/ManualPost.vue';
 import { mapState, mapGetters, mapActions } from 'vuex';
 import TwitterStatus from './components/TwitterStatus.vue';
 import SpotifyConnect from './components/SpotifyConnect.vue';
@@ -26,6 +29,7 @@ export default {
 
   components: {
     TopArtists,
+    ManualPost,
     TwitterStatus,
     SpotifyConnect,
     AutoPostConfig,
@@ -66,32 +70,6 @@ export default {
       }
     },
 
-    async postCurrentTopArtists() {
-      try {
-        this.ACTION_SET_LOADER(true);
-
-        const postFunction = this.$firebase.functions().httpsCallable('manuallyPostTweet');
-        const params = {
-          uid: this.user.uid,
-          artists: this.artists.slice(0, 5),
-        };
-
-        await postFunction(params);
-
-        this.$root.$emit('Alert::show', 'Tweet postado com sucesso', 'success');
-      } catch (error) {
-        const type = !error?.message || error?.message === 'internal' ? 'error' : 'warn';
-        const message =
-          !error?.message || error?.message === 'internal'
-            ? 'Desculpe, não foi possível publicar o tweet'
-            : error.message;
-
-        this.$root.$emit('Alert::show', message, type);
-      } finally {
-        this.ACTION_SET_LOADER(false);
-      }
-    },
-
     searchForRouteParams() {
       if (Object.prototype.hasOwnProperty.call(this.$route.params, 'error')) {
         const message =
@@ -109,13 +87,15 @@ export default {
 <style lang="scss">
 .dashboard {
   display: flex;
-  padding: 0 15px;
   overflow-y: auto;
   flex-direction: column;
-  height: calc(100vh - 110px);
+  padding: 0 15px 15px 15px;
+  height: calc(100vh - 50px);
+}
 
-  &__button {
-    @include button();
+@media (max-width: 576px) {
+  .dashboard {
+    height: calc(100vh - 110px);
   }
 }
 </style>

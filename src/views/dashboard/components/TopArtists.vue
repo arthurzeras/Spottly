@@ -149,7 +149,6 @@ export default {
 
   &__list {
     display: flex;
-    overflow-x: auto;
     margin-left: -15px;
     margin-right: -15px;
     justify-content: center;
