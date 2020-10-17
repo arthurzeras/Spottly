@@ -1,28 +1,22 @@
 <template>
   <div class="auto-post">
-    <div class="auto-post__loading" v-if="loading">
-      <span class="fas fa-spin fa-circle-notch fa-2x" />
+    <div class="auto-post__post-day">
+      <label class="auto-post__post-day--label">
+        Selecione o dia para as postagens:
+      </label>
+
+      <select class="auto-post__post-day--select" v-model="postDay">
+        <option :key="key" :value="key" v-for="(day, key) in weekDays">{{ day }}</option>
+      </select>
     </div>
 
-    <template v-else>
-      <div class="auto-post__post-day">
-        <label class="auto-post__post-day--label">
-          Selecione o dia para as postagens:
-        </label>
+    <button class="auto-post__button" @click="toggleStatus()">
+      {{ modalBtnText }}
+    </button>
 
-        <select class="auto-post__post-day--select" v-model="postDay">
-          <option :key="key" :value="key" v-for="(day, key) in weekDays">{{ day }}</option>
-        </select>
-      </div>
-
-      <button class="auto-post__button" @click="toggleStatus()">
-        {{ modalBtnText }}
-      </button>
-
-      <div class="auto-post__disclaimer">
-        As postagens automáticas acontecem no dia configurado as 20 horas horário de Brasília.
-      </div>
-    </template>
+    <div class="auto-post__disclaimer">
+      As postagens automáticas acontecem no dia configurado as 20 horas horário de Brasília.
+    </div>
   </div>
 </template>
 
@@ -36,11 +30,15 @@ export default {
 
   mixins: [WeekDays],
 
+  props: {
+    databaseRef: {
+      require: true,
+    },
+  },
+
   data: () => ({
     active: false,
-    loading: true,
     postDay: 'monday',
-    databaseRef: null,
     updatingDay: false,
   }),
 
@@ -58,25 +56,12 @@ export default {
 
   methods: {
     async getData() {
-      try {
-        this.loading = true;
+      const snapshot = await this.databaseRef.once('value');
+      const { twitterActive, postDay } = snapshot.val();
 
-        this.databaseRef = this.$firebase.database().ref(`users/${this.user.uid}`);
-
-        const snapshot = await this.databaseRef.once('value');
-        const { twitterActive, postDay } = snapshot.val();
-
-        this.active = twitterActive;
-        this.updatingDay = twitterActive;
-        this.postDay = postDay || 'monday';
-      } catch (error) {
-        this.$root.$emit(
-          'Alert::show',
-          'Ops, não consegui buscar as informações de postagens automaticas'
-        );
-      } finally {
-        this.loading = false;
-      }
+      this.active = twitterActive;
+      this.updatingDay = twitterActive;
+      this.postDay = postDay || 'monday';
     },
 
     async toggleStatus() {
@@ -110,11 +95,6 @@ export default {
 
 <style lang="scss">
 .auto-post {
-  &__loading {
-    text-align: center;
-    color: var(--primary);
-  }
-
   &__post-day {
     width: 100%;
     display: flex;

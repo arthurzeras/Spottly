@@ -13,7 +13,7 @@
       <div class="twitter-status__body--columns">
         <div class="twitter-status__body--info" v-html="statusText" />
         <small class="twitter-status__body--day-info" v-if="active">{{ dayText }}</small>
-        <small>Clique aqui para ativar</small>
+        <small v-else>Clique aqui para ativar</small>
       </div>
 
       <div class="twitter-status__body--columns">
