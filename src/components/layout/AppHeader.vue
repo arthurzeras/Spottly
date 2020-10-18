@@ -26,7 +26,7 @@
       />
 
       <div class="header__user-info">
-        <span :title="user.displayName">Olá, {{ nameTruncated }}</span>
+        <span :title="user.displayName">{{ nameTruncated }}</span>
 
         <button class="header__user-logout" title="Sair" @click="btnLogoutHandler()">
           <span class="fa fa-power-off" />
