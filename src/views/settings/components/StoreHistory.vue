@@ -2,7 +2,7 @@
   <div class="store-history">
     <p>
       O armazenamento de histórico possibilita a contagem exata dos artistas ouvidos na semana. Essa
-      funcionalidade armazena seu histórico da útlima semana de maneira independente.
+      funcionalidade armazena seu histórico da última semana de maneira independente.
     </p>
     <p>
       A diferença para o outro método é que usando a funcionalidade padrão do Spotify, o menor
