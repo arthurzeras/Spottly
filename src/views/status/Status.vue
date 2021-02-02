@@ -22,7 +22,12 @@
       </div>
 
       <div class="status__column">
-        <input type="text" class="status__column-filter" v-model="filter" />
+        <input
+          type="text"
+          v-model="filter"
+          placeholder="Buscar usuário"
+          class="status__column-filter"
+        />
 
         <div class="status__column-list">
           <div :key="uid" class="status__column-list-item" v-for="(user, uid) in listSorted">
@@ -98,9 +103,12 @@ export default {
         })
         .filter((uid) => {
           const user = this.allUsers[uid];
+
           if (!this.filter) return true;
 
-          return user.metadata.displayName.toLowerCase().includes(this.filter.toLowerCase());
+          const { displayName, username } = user?.metadata || {};
+
+          return `${displayName}${username}`.toLowerCase().includes(this.filter.toLowerCase());
         })
         .splice(0, 50)
         .forEach((uid) => {
@@ -197,7 +205,8 @@ export default {
       outline: none;
       padding: 10px;
       font-size: 1rem;
-      border-radius: 10px;
+      border-radius: 5px;
+      margin-bottom: 15px;
       border: 1px solid var(--neutral);
 
       &:hover {
