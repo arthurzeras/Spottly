@@ -102,11 +102,12 @@ export default {
 
           return user.metadata.displayName.toLowerCase().includes(this.filter.toLowerCase());
         })
+        .splice(0, 50)
         .forEach((uid) => {
           allUsers[uid] = this.allUsers[uid];
         });
 
-      return allUsers.splice(0, 50);
+      return allUsers;
     },
   },
 
