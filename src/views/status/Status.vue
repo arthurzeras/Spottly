@@ -96,14 +96,14 @@ export default {
           if (this.allUsers[a].twitterActive) return -1;
           return 1;
         })
-        .forEach((uid) => {
-          allUsers[uid] = this.allUsers[uid];
-        })
         .filter((uid) => {
           const user = this.allUsers[uid];
           if (!this.filter) return true;
 
           return user.metadata.displayName.toLowerCase().includes(this.filter.toLowerCase());
+        })
+        .forEach((uid) => {
+          allUsers[uid] = this.allUsers[uid];
         });
 
       return allUsers.splice(0, 50);
