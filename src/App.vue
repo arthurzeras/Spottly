@@ -43,6 +43,14 @@ export default {
         },
       });
 
+      try {
+        await this.$firebase.database().ref(`users/${uid}/metadata`).update({
+          photoURL: providerData[0].photoURL,
+        });
+      } catch (error) {
+        // Do nothing.
+      }
+
       let userDataSnapshot = {};
 
       try {
@@ -83,7 +91,9 @@ export default {
 </script>
 
 <style lang="scss">
-#app {
-  padding-bottom: 40px;
+@media (max-width: 576px) {
+  #app {
+    padding-bottom: 40px;
+  }
 }
 </style>
