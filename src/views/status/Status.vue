@@ -22,6 +22,8 @@
       </div>
 
       <div class="status__column">
+        <input type="text" class="status__column-filter" v-model="filter" />
+
         <div class="status__column-list">
           <div :key="uid" class="status__column-list-item" v-for="(user, uid) in listSorted">
             <div class="status__column-list-item__metadata">
@@ -59,6 +61,7 @@ export default {
   name: 'Status',
 
   data: () => ({
+    filter: '',
     allUsers: {},
     loading: true,
   }),
@@ -95,9 +98,15 @@ export default {
         })
         .forEach((uid) => {
           allUsers[uid] = this.allUsers[uid];
+        })
+        .filter((uid) => {
+          const user = this.allUsers[uid];
+          if (!this.filter) return true;
+
+          return user.metadata.displayName.toLowerCase().includes(this.filter.toLowerCase());
         });
 
-      return allUsers;
+      return allUsers.splice(0, 50);
     },
   },
 
@@ -180,6 +189,19 @@ export default {
       flex: 0 0 50%;
       font-size: 2rem;
       text-align: center;
+    }
+
+    &-filter {
+      width: 100%;
+      outline: none;
+      padding: 10px;
+      font-size: 1rem;
+      border-radius: 10px;
+      border: 1px solid var(--neutral);
+
+      &:hover {
+        border-color: var(--neutral-2);
+      }
     }
 
     &-list {
