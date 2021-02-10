@@ -1,23 +1,50 @@
 <template>
   <div class="auto-post">
-    <div class="auto-post__post-day">
-      <label class="auto-post__post-day--label">
-        Selecione o dia para as postagens:
-      </label>
-
-      <select class="auto-post__post-day--select" v-model="postDay">
-        <option :key="key" :value="key" v-for="(day, key) in weekDays">{{ day }}</option>
-      </select>
+    <div class="auto-post__loading" v-if="loading">
+      Um momento...
     </div>
 
-    <button class="auto-post__button" @click="toggleStatus()">
-      {{ modalBtnText }}
-    </button>
+    <div class="auto-post__error" v-else-if="error">
+      <p>Ops, aconteceu algum erro, tente novamente</p>
 
-    <div class="auto-post__disclaimer">
-      As postagens automáticas acontecem no dia configurado a qualquer momento no intervalo das 12
-      até as 23 horas.
+      <button class="auto-post__button" @click="getPostCountByDay()">
+        Recarregar
+      </button>
     </div>
+
+    <template v-else>
+      <div class="auto-post__post-day">
+        <label class="auto-post__post-day--label">
+          Selecione o dia para as postagens:
+        </label>
+
+        <select class="auto-post__post-day--select" v-model="postDay">
+          <option
+            :key="key"
+            :value="key"
+            v-for="(day, key) in weekDays"
+            :disabled="checkDayAvailability(key)"
+          >
+            {{ day }}
+          </option>
+        </select>
+      </div>
+
+      <button class="auto-post__button" @click="toggleStatus()">
+        {{ modalBtnText }}
+      </button>
+
+      <div class="auto-post__disclaimer">
+        As postagens automáticas acontecem no dia configurado a qualquer momento no intervalo das 12
+        até as 23 horas.
+      </div>
+
+      <div class="auto-post__disclaimer">
+        Alguns dias podem não estar disponíveis devido a quantidade de pessoas que já ativaram a
+        postagem nesse dia, o limite de ativação para cada dia é de 1000, uma limitação que o
+        próprio Twitter coloca :(
+      </div>
+    </template>
   </div>
 </template>
 
@@ -38,13 +65,17 @@ export default {
   },
 
   data: () => ({
+    error: true,
+    loading: true,
     active: false,
     postDay: 'monday',
+    postCountByDay: {},
     updatingDay: false,
   }),
 
   mounted() {
     this.getData();
+    this.getPostCountByDay();
   },
 
   computed: {
@@ -63,6 +94,22 @@ export default {
       this.active = twitterActive;
       this.updatingDay = twitterActive;
       this.postDay = postDay || 'monday';
+    },
+
+    async getPostCountByDay() {
+      this.$firebase.functions().useFunctionsEmulator('http://localhost:5001');
+
+      try {
+        this.loading = true;
+        this.error = false;
+        const postCountFunction = this.$firebase.functions().httpsCallable('getPostCountByDays');
+
+        this.postCountByDay = (await postCountFunction()).data;
+      } catch (error) {
+        this.error = true;
+      } finally {
+        this.loading = false;
+      }
     },
 
     async toggleStatus() {
@@ -90,12 +137,28 @@ export default {
         this.$root.$emit('Alert::show', message);
       }
     },
+
+    checkDayAvailability(day) {
+      return this.postCountByDay[day] > 1000;
+    },
   },
 };
 </script>
 
 <style lang="scss">
 .auto-post {
+  &__loading {
+    display: flex;
+    padding: 100px 0;
+    font-size: 1.5rem;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__error {
+    text-align: center;
+  }
+
   &__post-day {
     width: 100%;
     display: flex;
