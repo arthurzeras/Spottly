@@ -150,6 +150,23 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
 });
 
 /**
+ * Retorna o número de posts para cada dia da semana
+ */
+export const getPostCountByDays = functions.https.onCall(async () => {
+  const snapshot = await admin.database().ref('users').once('value');
+  const users: { [key: string]: User } = snapshot.val();
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+
+  return days.reduce(
+    (_days, day) => ({
+      ..._days,
+      [day]: Object.keys(users).filter((uid) => users[uid].postDay === day).length,
+    }),
+    {}
+  );
+});
+
+/**
  * Função somente para uso no ambiente de status (admin).
  * Retorna dados de todos os usuários cadastrados.
  *
