@@ -211,7 +211,7 @@ export const postScheduler = functions
   .timeZone('America/Sao_Paulo')
   .onRun(async () => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const today = 2;
+    const today = new Date().getDay();
     const currentHour = new Date().getHours();
     // Compara a hora atual e usa uma lógica para separar os posts em blocos de 100
     // por hora de acordo com a preferência de hora. (menores primeiro)
