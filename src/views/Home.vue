@@ -64,8 +64,8 @@ export default {
 
         const snapshot = await ref.once('value');
 
-        if (!snapshot.val()?.twitterActive) {
-          await ref.set({ twitterActive: false });
+        if (!('twitterActive' in snapshot.val())) {
+          await ref.set({ twitterActive: false, createdAt: new Date().toISOString() });
         }
 
         const metadata = {
