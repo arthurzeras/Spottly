@@ -2,7 +2,7 @@ name: Firebase Deploy
 
 on:
   push:
-    branches: [master]
+    branches: [ master ]
 
 jobs:
   deploy_functions:
@@ -46,7 +46,6 @@ jobs:
         run: |
           echo "VUE_APP_APP_ID=$VUE_APP_APP_ID" >> .env.local
           echo "VUE_APP_API_KEY=$VUE_APP_API_KEY" >> .env.local
-          echo "VUE_APP_PIX_KEY=$VUE_APP_PIX_KEY" >> .env.local
           echo "VUE_APP_PROJECT_ID=$VUE_APP_PROJECT_ID" >> .env.local
           echo "VUE_APP_AUTH_DOMAIN=$VUE_APP_AUTH_DOMAIN" >> .env.local
           echo "VUE_APP_DATABASE_URL=$VUE_APP_DATABASE_URL" >> .env.local
@@ -57,7 +56,6 @@ jobs:
         env:
           VUE_APP_APP_ID: ${{ secrets.VUE_APP_APP_ID }}
           VUE_APP_API_KEY: ${{ secrets.VUE_APP_API_KEY }}
-          VUE_APP_PIX_KEY: ${{ secrets.VUE_APP_PIX_KEY }}
           VUE_APP_PROJECT_ID: ${{ secrets.VUE_APP_PROJECT_ID }}
           VUE_APP_AUTH_DOMAIN: ${{ secrets.VUE_APP_AUTH_DOMAIN }}
           VUE_APP_DATABASE_URL: ${{ secrets.VUE_APP_DATABASE_URL }}
@@ -68,7 +66,7 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
+      
       - name: Build static files
         run: npm run build
 
