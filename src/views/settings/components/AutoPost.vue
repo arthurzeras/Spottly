@@ -15,7 +15,8 @@
     </button>
 
     <div class="auto-post__disclaimer">
-      As postagens automáticas acontecem no dia configurado as 20 horas horário de Brasília.
+      As postagens automáticas acontecem no dia configurado a qualquer momento no intervalo das 12
+      até as 23 horas.
     </div>
   </div>
 </template>
