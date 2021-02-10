@@ -190,11 +190,28 @@ exports.getStatus = functions.https.onCall(async (params) => {
 export const postScheduler = functions
   // .https.onCall(async () => {
   .runWith({ timeoutSeconds: 360 })
-  .pubsub.schedule('0 20 * * *')
+  .pubsub.schedule('0 0,13-23 * * *')
   .timeZone('America/Sao_Paulo')
   .onRun(async () => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const today = new Date().getDay();
+    const today = 2;
+    const currentHour = new Date().getHours();
+    // Compara a hora atual e usa uma lógica para separar os posts em blocos de 100
+    // por hora de acordo com a preferência de hora. (menores primeiro)
+    const hourMappingPreference: { [key: number]: number } = {
+      20: 0,
+      21: 1,
+      22: 2,
+      23: 3,
+      0: 4,
+      13: 11,
+      14: 10,
+      15: 9,
+      16: 8,
+      17: 7,
+      18: 6,
+      19: 5,
+    };
 
     const snapshot = await admin.database().ref('users').once('value');
     const users: { [key: string]: User } = snapshot.val();
@@ -203,20 +220,23 @@ export const postScheduler = functions
       .reduce((listUsers: User[], user: string) => {
         const current: User = users[user];
 
-        const hasSpotifyCredentials = (
+        const hasSpotifyCredentials =
           Boolean(current?.credentials?.spotify?.accessToken) &&
-          Boolean(current?.credentials?.spotify?.refreshToken)
-        );
+          Boolean(current?.credentials?.spotify?.refreshToken);
 
         if (current.twitterActive && days[today] === current.postDay && hasSpotifyCredentials) {
           listUsers.push({ ...current, uid: user });
         }
 
         return listUsers;
-      }, []);
+      }, [])
+      .slice(
+        hourMappingPreference[currentHour] * 100,
+        (hourMappingPreference[currentHour] * 100) + 100
+      );
 
     if (!usersToPostToday.length) {
-      functions.logger.info('🤷‍♂️ postScheduler 🤷‍♂️ Sem nada para postar hoje!');
+      functions.logger.info('🤷‍♂️ postScheduler 🤷‍♂️ Sem nada para postar nesta hora!');
       return;
     }
 
