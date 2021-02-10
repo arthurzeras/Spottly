@@ -57,8 +57,7 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
  */
 export const spotifyRefreshToken = functions.https.onCall(async (params) => {
   try {
-    const snapshot = await admin
-      .database()
+    const snapshot = await admin.database()
       .ref(`users/${params.uid}/credentials/spotify/refreshToken`)
       .once('value');
 
@@ -83,7 +82,7 @@ export const spotifyRefreshToken = functions.https.onCall(async (params) => {
 
     throw new functions.https.HttpsError(code, error.message || 'Erro interno');
   }
-});
+})
 
 /**
  * Posta o tweet manualmente, com os dados do momento em que é chamada
@@ -109,9 +108,10 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
       }
     }
 
-    const hasSpotifyCredentials =
+    const hasSpotifyCredentials = (
       Boolean(user?.credentials?.spotify?.accessToken) &&
-      Boolean(user?.credentials?.spotify?.refreshToken);
+      Boolean(user?.credentials?.spotify?.refreshToken)
+    );
 
     if (!hasSpotifyCredentials) {
       throw new functions.https.HttpsError(
@@ -147,23 +147,6 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
 
     throw new functions.https.HttpsError(code, message);
   }
-});
-
-/**
- * Retorna o número de posts para cada dia da semana
- */
-export const getPostCountByDays = functions.https.onCall(async () => {
-  const snapshot = await admin.database().ref('users').once('value');
-  const users: { [key: string]: User } = snapshot.val();
-  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-
-  return days.reduce(
-    (_days, day) => ({
-      ..._days,
-      [day]: Object.keys(users).filter((uid) => users[uid].postDay === day).length,
-    }),
-    {}
-  );
 });
 
 /**
@@ -207,28 +190,11 @@ exports.getStatus = functions.https.onCall(async (params) => {
 export const postScheduler = functions
   // .https.onCall(async () => {
   .runWith({ timeoutSeconds: 360 })
-  .pubsub.schedule('0 12-23 * * *')
+  .pubsub.schedule('0 20 * * *')
   .timeZone('America/Sao_Paulo')
   .onRun(async () => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const today = 2;
-    const currentHour = new Date().getHours();
-    // Compara a hora atual e usa uma lógica para separar os posts em blocos de 100
-    // por hora de acordo com a preferência de hora. (menores primeiro)
-    const hourMappingPreference: { [key: number]: number } = {
-      20: 0,
-      21: 1,
-      22: 2,
-      23: 3,
-      12: 11,
-      13: 10,
-      14: 9,
-      15: 8,
-      16: 7,
-      17: 6,
-      18: 5,
-      19: 4,
-    };
+    const today = new Date().getDay();
 
     const snapshot = await admin.database().ref('users').once('value');
     const users: { [key: string]: User } = snapshot.val();
@@ -237,36 +203,33 @@ export const postScheduler = functions
       .reduce((listUsers: User[], user: string) => {
         const current: User = users[user];
 
-        const hasSpotifyCredentials =
+        const hasSpotifyCredentials = (
           Boolean(current?.credentials?.spotify?.accessToken) &&
-          Boolean(current?.credentials?.spotify?.refreshToken);
+          Boolean(current?.credentials?.spotify?.refreshToken)
+        );
 
         if (current.twitterActive && days[today] === current.postDay && hasSpotifyCredentials) {
           listUsers.push({ ...current, uid: user });
         }
 
         return listUsers;
-      }, [])
-      .slice(
-        hourMappingPreference[currentHour] * 100,
-        hourMappingPreference[currentHour] * 100 + 100
-      );
+      }, []);
 
     if (!usersToPostToday.length) {
-      functions.logger.info('🤷‍♂️ postScheduler 🤷‍♂️ Sem nada para postar nesta hora!');
+      functions.logger.info('🤷‍♂️ postScheduler 🤷‍♂️ Sem nada para postar hoje!');
       return;
     }
 
     for (const user of usersToPostToday) {
       try {
         if (user.storeHistoryActivated) {
-          const historySnapshot = await admin.database().ref(`history/${user.uid}`).once('value');
+          const historySnapshot = await admin.database()
+            .ref(`history/${user.uid}`).once('value');
 
           if (!historySnapshot.val()) continue;
 
-          const history: History[] = Object.keys(historySnapshot.val()).map(
-            (key) => historySnapshot.val()[key]
-          );
+          const history: History[] = Object.keys(historySnapshot.val())
+            .map((key) => historySnapshot.val()[key]);
 
           await twitter.postTweetFromHistory(user.credentials.twitter, history);
           await clearHistoryFromLastWeek(user.uid || '');
@@ -290,7 +253,7 @@ export const postScheduler = functions
     }
 
     functions.logger.log('✅ postScheduler ✅: Scheduler finalizado');
-  });
+  })
 
 /**
  * Scheduler para buscar o histórico de músicas ouvidas dos usuarios
