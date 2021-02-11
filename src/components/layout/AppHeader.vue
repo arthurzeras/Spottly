@@ -17,6 +17,10 @@
       </router-link>
     </nav>
 
+    <div class="header__donate">
+      <donate-button />
+    </div>
+
     <div class="header__user" ref="userElement" v-if="isLogged">
       <img
         alt="User Image"
@@ -59,13 +63,14 @@
 
 <script>
 import Messages from '@/utils/messages';
+import DonateButton from '../DonateButton.vue';
 import AppModal from '@/components/global/Modal.vue';
 import { mapState, mapActions, mapGetters } from 'vuex';
 
 export default {
   name: 'AppHeader',
 
-  components: { AppModal },
+  components: { AppModal, DonateButton },
 
   data: () => ({
     dropdownVisible: false,
@@ -178,6 +183,10 @@ export default {
       color: var(--dark);
       margin: 4px 0 0 5px;
     }
+  }
+
+  &__donate {
+    @include columns();
   }
 
   &__nav {
