@@ -97,8 +97,6 @@ export default {
     },
 
     async getPostCountByDay() {
-      this.$firebase.functions().useFunctionsEmulator('http://localhost:5001');
-
       try {
         this.loading = true;
         this.error = false;
