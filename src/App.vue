@@ -55,18 +55,18 @@ export default {
 
       try {
         userDataSnapshot = await this.$firebase.database().ref(`users/${uid}`).once('value');
+
+        const { accessToken, refreshToken } = userDataSnapshot.val()?.credentials?.spotify || {};
+
+        if (refreshToken) {
+          localStorage.setItem('spotify_refresh', refreshToken);
+        }
+
+        if (accessToken) {
+          this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(accessToken);
+        }
       } catch (error) {
         userDataSnapshot = {};
-      }
-
-      const { accessToken, refreshToken } = userDataSnapshot.val()?.credentials?.spotify || {};
-
-      if (refreshToken) {
-        localStorage.setItem('spotify_refresh', refreshToken);
-      }
-
-      if (accessToken) {
-        this.ACTION_SET_SPOTIFY_ACCESS_TOKEN(accessToken);
       }
 
       this.ACTION_SET_LOADER(false);
