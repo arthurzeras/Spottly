@@ -1,5 +1,6 @@
 import { Spotify } from './spotify';
 import { Twitter } from './twitter';
+import { isBefore } from 'date-fns';
 import * as admin from 'firebase-admin';
 import { User, Artist, History } from './types';
 import * as functions from 'firebase-functions';
@@ -205,14 +206,15 @@ exports.getStatus = functions.https.onCall(async (params) => {
  * - Se estiver no modo History, também remove o conteúdo da última semana;
  */
 export const postScheduler = functions
-  // .https.onCall(async () => {
-  .runWith({ timeoutSeconds: 360 })
+  // .https.onRequest(async (req, res) => {
+  .runWith({ timeoutSeconds: 540 })
   .pubsub.schedule('0 12-23 * * *')
   .timeZone('America/Sao_Paulo')
   .onRun(async () => {
     const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
     const today = new Date().getDay();
     const currentHour = new Date().getHours();
+
     // Compara a hora atual e usa uma lógica para separar os posts em blocos de 100
     // por hora de acordo com a preferência de hora. (menores primeiro)
     const hourMappingPreference: { [key: number]: number } = {
@@ -236,6 +238,7 @@ export const postScheduler = functions
     const usersToPostToday = Object.keys(users)
       .reduce((listUsers: User[], user: string) => {
         const current: User = users[user];
+        current.createdAt = current.createdAt || new Date().toISOString();
 
         const hasSpotifyCredentials =
           Boolean(current?.credentials?.spotify?.accessToken) &&
@@ -247,6 +250,7 @@ export const postScheduler = functions
 
         return listUsers;
       }, [])
+      .sort((a, b) => (isBefore(new Date(a.createdAt), new Date(b.createdAt)) ? -1 : 1))
       .slice(
         hourMappingPreference[currentHour] * 100,
         hourMappingPreference[currentHour] * 100 + 100

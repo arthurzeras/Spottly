@@ -4,35 +4,36 @@ export interface SpotifyCredentials {
 }
 
 export interface TwitterCredentials {
-  secret: string
-  accessToken: string
+  secret: string;
+  accessToken: string;
 }
 
 export interface Artist {
-  name: string
-  quantity: number
+  name: string;
+  quantity: number;
 }
 
 export interface History {
-  track: string,
-  playedAt: string,
-  artists: string[],
+  track: string;
+  playedAt: string;
+  artists: string[];
 }
 
 export interface User {
   uid?: string;
   postDay?: string;
+  createdAt: string;
   twitterActive: boolean;
   storeHistoryActivated?: boolean;
 
   log?: {
     lastPostTime: string;
-  }
+  };
 
   credentials: {
-    spotify?: SpotifyCredentials
-    twitter: TwitterCredentials
-  }
+    twitter: TwitterCredentials;
+    spotify?: SpotifyCredentials;
+  };
 
   metadata: {
     uid: string;
@@ -40,5 +41,5 @@ export interface User {
     username: string;
     privderId: string;
     displayName: string;
-  }
+  };
 }
