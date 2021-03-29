@@ -4,7 +4,7 @@ import { isBefore } from 'date-fns';
 import * as admin from 'firebase-admin';
 import { User, Artist, History } from './types';
 import * as functions from 'firebase-functions';
-import { clearHistoryFromLastWeek, storePlaybackHistory } from './general';
+import { clearHistoryFromLastWeek } from './general';
 
 admin.initializeApp();
 const spotify = new Spotify();
@@ -302,22 +302,22 @@ export const postScheduler = functions
  *
  * Roda toda hora no minuto 58 de cada uma.
  */
-export const getHistoryScheduler = functions
-  // .https.onCall(async () => {
-  .runWith({ timeoutSeconds: 360, memory: '256MB' })
-  .pubsub.schedule('58 * * * *')
-  .timeZone('America/Sao_Paulo')
-  .onRun(async () => {
-    const snapshot = await admin.database().ref('users').once('value');
-    const users = snapshot.val();
+// export const getHistoryScheduler = functions
+//   // .https.onCall(async () => {
+//   .runWith({ timeoutSeconds: 360, memory: '256MB' })
+//   .pubsub.schedule('58 * * * *')
+//   .timeZone('America/Sao_Paulo')
+//   .onRun(async () => {
+//     const snapshot = await admin.database().ref('users').once('value');
+//     const users = snapshot.val();
 
-    const storeList = Object.keys(users)
-      .filter((user) => users[user].storeHistoryActivated)
-      .map((user) => storePlaybackHistory({ uid: user, ...users[user] }));
+//     const storeList = Object.keys(users)
+//       .filter((user) => users[user].storeHistoryActivated)
+//       .map((user) => storePlaybackHistory({ uid: user, ...users[user] }));
 
-    try {
-      await Promise.all(storeList);
-    } catch (error) {
-      functions.logger.error('❌ Get History Scheduler: ', error.message, error);
-    }
-  });
+//     try {
+//       await Promise.all(storeList);
+//     } catch (error) {
+//       functions.logger.error('❌ Get History Scheduler: ', error.message, error);
+//     }
+//   });
