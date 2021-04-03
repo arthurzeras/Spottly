@@ -232,7 +232,13 @@ export const postScheduler = functions
       19: 4,
     };
 
-    const snapshot = await admin.database().ref('users').once('value');
+    const snapshot = await admin
+      .database()
+      .ref('users')
+      .orderByChild('postDay')
+      .equalTo(days[today])
+      .once('value');
+
     const users: { [key: string]: User } = snapshot.val();
 
     const usersToPostToday = Object.keys(users)
@@ -244,7 +250,7 @@ export const postScheduler = functions
           Boolean(current?.credentials?.spotify?.accessToken) &&
           Boolean(current?.credentials?.spotify?.refreshToken);
 
-        if (current.twitterActive && days[today] === current.postDay && hasSpotifyCredentials) {
+        if (current.twitterActive && hasSpotifyCredentials) {
           listUsers.push({ ...current, uid: user });
         }
 
