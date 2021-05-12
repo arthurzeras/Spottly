@@ -29,10 +29,25 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
 
     const { data } = await spotify.getAccessToken(params);
 
-    await admin.database().ref(`users/${uid}/credentials/spotify`).update({
+    const payload = {
       accessToken: data.access_token,
       refreshToken: data.refresh_token,
-    });
+    };
+
+    await admin.database().ref(`users/${uid}/credentials/spotify`).update(payload);
+
+    await admin
+      .firestore()
+      .collection('users')
+      .doc(uid)
+      .set(
+        {
+          credentials: {
+            spotify: payload,
+          },
+        },
+        { merge: true }
+      );
 
     functions.logger.log('✅ spotifyAuthorize ✅');
 
