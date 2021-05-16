@@ -14,16 +14,30 @@ export default {
 
   props: {
     databaseRef: {
-      require: true,
+      required: true,
+    },
+
+    firestoreRef: {
+      required: false,
     },
   },
 
   methods: {
     async deactivate() {
       try {
-        await this.databaseRef.update({
-          twitterActive: false,
-        });
+        const databasesRefs = [this.databaseRef];
+
+        if (this.firestoreRef) {
+          databasesRefs.push(this.firestoreRef);
+        }
+
+        const promises = databasesRefs.map((ref) =>
+          ref.update({
+            twitterActive: false,
+          })
+        );
+
+        await Promise.all(promises);
 
         this.$emit('close');
       } catch (error) {

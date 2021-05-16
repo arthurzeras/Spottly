@@ -31,7 +31,12 @@
       </button>
 
       <app-modal :title="currentItem.title" ref="modal">
-        <component :database-ref="databaseRef" :is="currentItem.component" @close="closeModal()" />
+        <component
+          @close="closeModal()"
+          :database-ref="databaseRef"
+          :is="currentItem.component"
+          :firestore-ref="firestoreRef"
+        />
       </app-modal>
     </template>
   </section>
@@ -61,6 +66,7 @@ export default {
     loading: true,
     currentItem: {},
     databaseRef: null,
+    firestoreRef: null,
     items: [
       {
         enabled: true,
@@ -94,6 +100,7 @@ export default {
         this.error = false;
         this.loading = true;
         this.databaseRef = this.$firebase.database().ref(`users/${this.user.uid}`);
+        this.firestoreRef = this.$firebase.firestore().collection('users').doc(this.user.uid);
 
         const snapshot = await this.databaseRef.once('value');
         const { twitterActive } = snapshot.val();
@@ -172,7 +179,7 @@ export default {
 
       &__disabled {
         opacity: 0.5;
-        cursor: not-allowed;
+        pointer-events: none;
       }
     }
   }
