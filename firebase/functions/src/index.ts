@@ -9,6 +9,7 @@ import { clearHistoryFromLastWeek } from './general';
 admin.initializeApp();
 const spotify = new Spotify();
 const twitter = new Twitter();
+const collection = admin.firestore().collection('users');
 
 /**
  * Busca os tokens de acesso do Spotify, salva no banco e os retorna.
@@ -35,19 +36,7 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
     };
 
     await admin.database().ref(`users/${uid}/credentials/spotify`).update(payload);
-
-    await admin
-      .firestore()
-      .collection('users')
-      .doc(uid)
-      .set(
-        {
-          credentials: {
-            spotify: payload,
-          },
-        },
-        { merge: true }
-      );
+    await collection.doc(uid).set({ credentials: { spotify: payload } }, { merge: true });
 
     functions.logger.log('✅ spotifyAuthorize ✅');
 
@@ -152,9 +141,13 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
 
     await twitter.postTweet(user.credentials.twitter, artists);
 
+    const lastPostTime = new Date().toISOString();
+
     await admin.database().ref(`users/${params.uid}/log`).update({
-      lastPostTime: new Date().toISOString(),
+      lastPostTime,
     });
+
+    await collection.doc(params.uid).set({ log: { lastPostTime } }, { merge: true });
   } catch (error) {
     const code = error?.code || 'internal';
     const message = error?.message || 'Desculpe, não foi possível publicar o tweet';
