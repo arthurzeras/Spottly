@@ -60,7 +60,11 @@ export default {
 
   props: {
     databaseRef: {
-      require: true,
+      required: true,
+    },
+
+    firestoreRef: {
+      required: false,
     },
   },
 
@@ -98,8 +102,9 @@ export default {
 
     async getPostCountByDay() {
       try {
-        this.loading = true;
         this.error = false;
+        this.loading = true;
+
         const postCountFunction = this.$firebase.functions().httpsCallable('getPostCountByDays');
 
         this.postCountByDay = (await postCountFunction()).data;
@@ -112,10 +117,16 @@ export default {
 
     async toggleStatus() {
       try {
-        await this.databaseRef.update({
+        const payload = {
           postDay: this.postDay,
           twitterActive: !this.updatingDay ? !this.active : true,
-        });
+        };
+
+        await this.databaseRef.update(payload);
+
+        if (this.firestoreRef) {
+          await this.firestoreRef.update(payload);
+        }
 
         let message = Messages.Success.ACTIVE_AUTO_POST;
 
