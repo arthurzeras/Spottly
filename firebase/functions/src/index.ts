@@ -141,13 +141,15 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
 
     await twitter.postTweet(user.credentials.twitter, artists);
 
-    const lastPostTime = new Date().toISOString();
+    const lastPostTimeNow = new Date().toISOString();
 
     await admin.database().ref(`users/${params.uid}/log`).update({
-      lastPostTime,
+      lastPostTime: lastPostTimeNow,
     });
 
-    await collection.doc(params.uid).set({ log: { lastPostTime } }, { merge: true });
+    await collection
+      .doc(params.uid)
+      .set({ log: { lastPostTime: lastPostTimeNow } }, { merge: true });
   } catch (error) {
     const code = error?.code || 'internal';
     const message = error?.message || 'Desculpe, não foi possível publicar o tweet';
