@@ -4,7 +4,7 @@ import { isBefore } from 'date-fns';
 import * as admin from 'firebase-admin';
 import { User, Artist, History } from './types';
 import * as functions from 'firebase-functions';
-import { clearHistoryFromLastWeek } from './general';
+import { clearHistoryFromLastWeek, formatDocuments } from './general';
 
 admin.initializeApp();
 const spotify = new Spotify();
@@ -62,22 +62,18 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
  */
 export const spotifyRefreshToken = functions.https.onCall(async (params) => {
   try {
-    const snapshot = await admin
-      .database()
-      .ref(`users/${params.uid}/credentials/spotify/refreshToken`)
-      .once('value');
-
-    const refreshToken = snapshot.val();
+    const snapshot = await collection.doc(params.uid).get();
+    const user = snapshot.data();
+    const refreshToken = user?.credentials?.spotify?.refreshToken;
 
     if (!refreshToken) {
       throw new functions.https.HttpsError('invalid-argument', 'Refresh token inválido');
     }
 
     const { data } = await spotify.getRefreshedToken(refreshToken);
+    const payload = { credentials: { spotify: { accessToken: data.access_token } } };
 
-    await admin.database().ref(`users/${params.uid}/credentials/spotify`).update({
-      accessToken: data.access_token,
-    });
+    await collection.doc(params.uid).set(payload, { merge: true });
 
     functions.logger.log('✅ spotifyRefreshToken ✅');
 
@@ -99,8 +95,8 @@ export const spotifyRefreshToken = functions.https.onCall(async (params) => {
  */
 export const manuallyPostTweet = functions.https.onCall(async (params) => {
   try {
-    const snapshot = await admin.database().ref(`users/${params.uid}`).once('value');
-    const user: User = snapshot.val();
+    const snapshot = await collection.doc(params.uid).get();
+    const user = snapshot.data();
 
     if (user?.log?.lastPostTime) {
       const now = Date.now();
@@ -125,7 +121,7 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
       );
     }
 
-    const { data } = await spotify.getTopArtists(user.credentials.spotify || {});
+    const { data } = await spotify.getTopArtists(user?.credentials?.spotify || {});
 
     if (!data.items.length) {
       throw new functions.https.HttpsError(
@@ -139,7 +135,7 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
       name: artist.name,
     }));
 
-    await twitter.postTweet(user.credentials.twitter, artists);
+    await twitter.postTweet(user?.credentials?.twitter, artists);
 
     const lastPostTimeNow = new Date().toISOString();
 
@@ -164,14 +160,14 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
  * Retorna o número de posts para cada dia da semana
  */
 export const getPostCountByDays = functions.https.onCall(async () => {
-  const snapshot = await admin.database().ref('users').once('value');
-  const users: { [key: string]: User } = snapshot.val();
+  const documents = await collection.where('twitterActive', '==', true).get();
+  const users = formatDocuments(documents);
   const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
   return days.reduce(
     (_days, day) => ({
       ..._days,
-      [day]: Object.keys(users).filter((uid) => users[uid].postDay === day).length,
+      [day]: users.filter((user) => user.postDay === day),
     }),
     {}
   );
@@ -242,18 +238,16 @@ export const postScheduler = functions
       19: 4,
     };
 
-    const snapshot = await admin
-      .database()
-      .ref('users')
-      .orderByChild('postDay')
-      .equalTo(days[today])
-      .once('value');
+    const snapshot = await collection
+      .where('postDay', '==', days[today])
+      .where('twitterActive', '==', true)
+      .get();
 
-    const users: { [key: string]: User } = snapshot.val();
+    const users = formatDocuments(snapshot);
 
-    const usersToPostToday = Object.keys(users)
-      .reduce((listUsers: User[], user: string) => {
-        const current: User = users[user];
+    const usersToPostToday = users
+      .reduce((listUsers: User[], user: User) => {
+        const current: User = user;
         current.createdAt = current.createdAt || new Date().toISOString();
 
         const hasSpotifyCredentials =
@@ -261,7 +255,7 @@ export const postScheduler = functions
           Boolean(current?.credentials?.spotify?.refreshToken);
 
         if (current.twitterActive && hasSpotifyCredentials) {
-          listUsers.push({ ...current, uid: user });
+          listUsers.push({ ...current, uid: user.uid });
         }
 
         return listUsers;
