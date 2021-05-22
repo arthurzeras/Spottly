@@ -65,11 +65,10 @@ export default {
     async getData() {
       try {
         this.loading = true;
+        this.databaseRef = this.$firebase.firestore().collection('users').doc(this.user.uid);
 
-        this.databaseRef = this.$firebase.database().ref(`users/${this.user.uid}`);
-
-        const snapshot = await this.databaseRef.once('value');
-        const { twitterActive, postDay } = snapshot.val();
+        const snapshot = await this.databaseRef.get();
+        const { twitterActive, postDay } = snapshot.data();
 
         this.active = twitterActive;
         this.postDay = postDay || 'monday';

@@ -25,7 +25,13 @@ export default {
     AppFooter,
   },
 
+  data: () => ({
+    collection: null,
+  }),
+
   mounted() {
+    this.collection = this.$firebase.firestore().collection('users');
+
     this.$firebase.auth().onAuthStateChanged(async (user) => {
       this.ACTION_SET_LOADER(true);
 
@@ -44,9 +50,20 @@ export default {
       });
 
       try {
+        const photoURL = providerData[0]?.photoURL || '';
+
         await this.$firebase.database().ref(`users/${uid}/metadata`).update({
-          photoURL: providerData[0].photoURL,
+          photoURL,
         });
+
+        await this.collection.doc(uid).set(
+          {
+            metadata: {
+              photoURL,
+            },
+          },
+          { merged: true }
+        );
       } catch (error) {
         // Do nothing.
       }
@@ -54,9 +71,9 @@ export default {
       let userDataSnapshot = {};
 
       try {
-        userDataSnapshot = await this.$firebase.database().ref(`users/${uid}`).once('value');
+        userDataSnapshot = await this.collection.doc(uid).get();
 
-        const { accessToken, refreshToken } = userDataSnapshot.val()?.credentials?.spotify || {};
+        const { accessToken, refreshToken } = userDataSnapshot.data()?.credentials?.spotify || {};
 
         if (refreshToken) {
           localStorage.setItem('spotify_refresh', refreshToken);

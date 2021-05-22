@@ -102,8 +102,8 @@ export default {
         this.databaseRef = this.$firebase.database().ref(`users/${this.user.uid}`);
         this.firestoreRef = this.$firebase.firestore().collection('users').doc(this.user.uid);
 
-        const snapshot = await this.databaseRef.once('value');
-        const { twitterActive } = snapshot.val();
+        const snapshot = await this.firestoreRef.get();
+        const { twitterActive } = snapshot.data();
 
         this.items[1].enabled = twitterActive;
       } catch (error) {

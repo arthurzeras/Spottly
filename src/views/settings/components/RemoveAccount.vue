@@ -12,14 +12,18 @@
 export default {
   props: {
     databaseRef: {
-      require: true,
+      required: true,
+    },
+
+    firestoreRef: {
+      required: true,
     },
   },
 
   methods: {
     async deleteAccount() {
       try {
-        await this.databaseRef.set(null);
+        await this.firestoreRef.delete();
         await this.$firebase.auth().currentUser.delete();
         localStorage.removeItem('spotify_token');
         localStorage.removeItem('spotify_refresh');
