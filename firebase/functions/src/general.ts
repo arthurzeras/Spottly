@@ -23,8 +23,10 @@ export async function storePlaybackHistory(user: User): Promise<void> {
 
   const spotify = new Spotify();
 
-  const { data: history } = await spotify
-    .getPlaybackHistory(user.credentials.spotify || {}, timestampAfter);
+  const { data: history } = await spotify.getPlaybackHistory(
+    user.credentials.spotify || {},
+    timestampAfter
+  );
 
   const items = history.items
     .map((item: any) => ({
@@ -38,4 +40,19 @@ export async function storePlaybackHistory(user: User): Promise<void> {
     }, {});
 
   await ref.update(items);
+}
+
+export function formatDocuments(
+  snapshot: FirebaseFirestore.QuerySnapshot<FirebaseFirestore.DocumentData>
+) {
+  const documents: User[] = [];
+
+  snapshot.forEach((doc) =>
+    documents.push({
+      uid: doc.id,
+      ...(doc.data() as User),
+    })
+  );
+
+  return documents;
 }

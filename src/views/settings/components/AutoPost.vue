@@ -92,8 +92,8 @@ export default {
 
   methods: {
     async getData() {
-      const snapshot = await this.databaseRef.once('value');
-      const { twitterActive, postDay } = snapshot.val();
+      const snapshot = await this.firestoreRef.get();
+      const { twitterActive, postDay } = snapshot.data();
 
       this.active = twitterActive;
       this.updatingDay = twitterActive;

@@ -12,21 +12,30 @@
 export default {
   props: {
     databaseRef: {
-      require: true,
+      required: true,
+    },
+
+    firestoreRef: {
+      required: true,
     },
   },
 
   methods: {
     async deleteAccount() {
       try {
-        await this.databaseRef.set(null);
+        await this.firestoreRef.delete();
         await this.$firebase.auth().currentUser.delete();
         localStorage.removeItem('spotify_token');
         localStorage.removeItem('spotify_refresh');
         this.$router.push({ name: 'Home' });
         window.location.reload();
       } catch (error) {
-        this.$root.$emit('Alert::show', 'Ops, não foi possível remover sua conta, tente novamente');
+        const message =
+          error.error.message === 'CREDENTIAL_TOO_OLD_LOGIN_AGAIN'
+            ? 'Ops, seus dados estão desatualizados, faça login novamente antes de remover a conta'
+            : 'Ops, não foi possível remover sua conta, tente novamente';
+
+        this.$root.$emit('Alert::show', message);
       }
     },
   },
