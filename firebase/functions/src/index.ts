@@ -35,7 +35,6 @@ export const spotifyAuthorize = functions.https.onCall(async (params) => {
       refreshToken: data.refresh_token,
     };
 
-    await admin.database().ref(`users/${uid}/credentials/spotify`).update(payload);
     await collection.doc(uid).set({ credentials: { spotify: payload } }, { merge: true });
 
     functions.logger.log('✅ spotifyAuthorize ✅');
@@ -139,10 +138,6 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
 
     const lastPostTimeNow = new Date().toISOString();
 
-    await admin.database().ref(`users/${params.uid}/log`).update({
-      lastPostTime: lastPostTimeNow,
-    });
-
     await collection
       .doc(params.uid)
       .set({ log: { lastPostTime: lastPostTimeNow } }, { merge: true });
@@ -190,8 +185,9 @@ exports.getStatus = functions.https.onCall(async (params) => {
       );
     }
 
-    const snapshot = await admin.database().ref('users').once('value');
-    return snapshot.val();
+    // TODO: use firestore
+    // const snapshot = await admin.database().ref('users').once('value');
+    // return snapshot.val();
   } catch (error) {
     const code = error?.code || 'internal';
     const message = error?.message || 'Não foi possível executar essa ação';
