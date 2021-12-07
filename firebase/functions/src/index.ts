@@ -154,19 +154,20 @@ export const manuallyPostTweet = functions.https.onCall(async (params) => {
 /**
  * Retorna o número de posts para cada dia da semana
  */
-// export const getPostCountByDays = functions.https.onCall(async () => {
-//   const documents = await collection.where('twitterActive', '==', true).get();
-//   const users = formatDocuments(documents);
-//   const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+export const getPostCountByDays = functions.https.onCall(async () => {
+  return {};
+  // const documents = await collection.where('twitterActive', '==', true).get();
+  // const users = formatDocuments(documents);
+  // const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
-//   return days.reduce(
-//     (_days, day) => ({
-//       ..._days,
-//       [day]: users.filter((user) => user.postDay === day),
-//     }),
-//     {}
-//   );
-// });
+  // return days.reduce(
+  //   (_days, day) => ({
+  //     ..._days,
+  //     [day]: users.filter((user) => user.postDay === day),
+  //   }),
+  //   {}
+  // );
+});
 
 /**
  * Função somente para uso no ambiente de status (admin).
