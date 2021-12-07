@@ -4,13 +4,13 @@
       Um momento...
     </div>
 
-    <div class="auto-post__error" v-else-if="error">
+    <!-- <div class="auto-post__error" v-else-if="error">
       <p>Ops, aconteceu algum erro, tente novamente</p>
 
       <button class="auto-post__button" @click="getPostCountByDay()">
         Recarregar
       </button>
-    </div>
+    </div> -->
 
     <template v-else>
       <div class="auto-post__post-day">
@@ -40,9 +40,9 @@
       </div>
 
       <div class="auto-post__disclaimer">
-        Alguns dias podem não estar disponíveis devido a quantidade de pessoas que já ativaram a
-        postagem nesse dia, o limite de ativação para cada dia é de 1000, uma limitação que o
-        próprio Twitter coloca :(
+        Caso chegue o dia que você escolheu e o Spottly não postou seu tweet, provavelmente o limite
+        de posts do dia foi atingido, o twitter limita em 1000 posts por dia, caso já tenha 1000
+        postagens no dia que você escolheu, você pode ficar de fora. :(
       </div>
     </template>
   </div>
@@ -66,8 +66,8 @@ export default {
 
   data: () => ({
     error: true,
-    loading: true,
     active: false,
+    loading: false,
     postDay: 'monday',
     postCountByDay: {},
     updatingDay: false,
@@ -75,7 +75,7 @@ export default {
 
   mounted() {
     this.getData();
-    this.getPostCountByDay();
+    // this.getPostCountByDay();
   },
 
   computed: {
@@ -96,20 +96,20 @@ export default {
       this.postDay = postDay || 'monday';
     },
 
-    async getPostCountByDay() {
-      try {
-        this.error = false;
-        this.loading = true;
+    // async getPostCountByDay() {
+    //   try {
+    //     this.error = false;
+    //     this.loading = true;
 
-        const postCountFunction = this.$firebase.functions().httpsCallable('getPostCountByDays');
+    //     const postCountFunction = this.$firebase.functions().httpsCallable('getPostCountByDays');
 
-        this.postCountByDay = (await postCountFunction()).data;
-      } catch (error) {
-        this.error = true;
-      } finally {
-        this.loading = false;
-      }
-    },
+    //     this.postCountByDay = (await postCountFunction()).data;
+    //   } catch (error) {
+    //     this.error = true;
+    //   } finally {
+    //     this.loading = false;
+    //   }
+    // },
 
     async toggleStatus() {
       try {
