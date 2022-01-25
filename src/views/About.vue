@@ -29,6 +29,21 @@
         os artistas mais ouvidos.
       </p>
 
+      <h3>Cookies</h3>
+
+      <p>
+        O que são cookies? Cookies são pequenos arquivos de dados armazenados em seu navegador ou
+        dispositivo. Eles podem ser atendidos pela entidade que opera o site que você está visitando
+        (chamados de “cookies primários”) ou por outras empresas (chamados “cookies de terceiros”).
+      </p>
+
+      <p>
+        Quando você usa o Spottly, é coletado ou recebido automaticamente algumas informações sobre
+        como você acessa o site, incluindo o tipo de dispositivo, sistema operacional e navegador
+        que você usa, e quão rápida ou estável é sua conexão com a Internet. As informações que
+        recebemos dependem do dispositivo que você está usando e de quais serviços você acessa.
+      </p>
+
       <p>
         Desenvolvido e mantido por Arthur Oliveira.
       </p>
