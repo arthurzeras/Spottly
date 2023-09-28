@@ -13,10 +13,6 @@ export default {
   name: 'DeactivateAutoPost',
 
   props: {
-    databaseRef: {
-      required: true,
-    },
-
     firestoreRef: {
       required: false,
     },
@@ -25,19 +21,9 @@ export default {
   methods: {
     async deactivate() {
       try {
-        const databasesRefs = [this.databaseRef];
-
-        if (this.firestoreRef) {
-          databasesRefs.push(this.firestoreRef);
-        }
-
-        const promises = databasesRefs.map((ref) =>
-          ref.update({
-            twitterActive: false,
-          })
-        );
-
-        await Promise.all(promises);
+        await this.firestoreRef.update({
+          twitterActive: false,
+        });
 
         this.$emit('close');
       } catch (error) {

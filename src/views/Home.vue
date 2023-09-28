@@ -60,36 +60,22 @@ export default {
 
         if (!result.user || !result?.user?.providerData.length) return;
 
-        const ref = this.$firebase.database().ref(`users/${result.user.uid}`);
-        const snapshot = await ref.once('value');
         const createdAt = new Date().toISOString();
-
-        if (!('twitterActive' in snapshot.val())) {
-          await ref.set({ twitterActive: false, createdAt });
-        }
 
         const metadata = {
           ...result.user.providerData[0],
           username: result.additionalUserInfo.username,
         };
 
-        await this.$firebase.database().ref(`users/${result.user.uid}/metadata`).set(metadata);
-
         const twitter = {
           secret: result.credential.secret,
           accessToken: result.credential.accessToken,
         };
 
-        await this.$firebase
-          .database()
-          .ref(`users/${result.user.uid}/credentials/twitter`)
-          .update(twitter);
-
         this.saveOrUpdateOnFirestore({
           createdAt,
           uid: result.user.uid,
           payload: {
-            ...snapshot.val(),
             metadata,
             credentials: { twitter },
           },

@@ -52,10 +52,6 @@ export default {
       try {
         const photoURL = providerData[0]?.photoURL || '';
 
-        await this.$firebase.database().ref(`users/${uid}/metadata`).update({
-          photoURL,
-        });
-
         await this.collection.doc(uid).set(
           {
             metadata: {

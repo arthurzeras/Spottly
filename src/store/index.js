@@ -10,7 +10,6 @@ export default new Vuex.Store({
     loader: false,
     userConfig: {},
     skipConfig: false,
-    hasFirestore: false,
     spotify: {
       accessToken: '',
     },
@@ -23,10 +22,6 @@ export default new Vuex.Store({
 
     SET_USER(state, payload) {
       state.user = payload;
-    },
-
-    SET_HAS_FIRESTORE(state, payload) {
-      state.hasFirestore = payload;
     },
 
     SET_SPOTIFY_ACCESS_TOKEN(state, payload) {

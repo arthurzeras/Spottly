@@ -23,15 +23,7 @@ const ACTION_SET_USER_CONFIG = async ({ commit, state }) => {
     const firestoreRef = firebase.firestore().collection('users');
     const document = await firestoreRef.doc(state.user.uid).get();
 
-    if (!document.exists) {
-      commit('SET_HAS_FIRESTORE', false);
-      const ref = firebase.database().ref(`users/${state.user.uid}`);
-      const snapshot = await ref.once('value');
-      user = snapshot.val();
-    }
-
     if (document.exists) {
-      commit('SET_HAS_FIRESTORE', true);
       user = document.data();
     }
 
@@ -45,16 +37,7 @@ const ACTION_SET_USER_CONFIG = async ({ commit, state }) => {
 
 const ACTION_ACTIVATE_AUTO_POST = async ({ state, dispatch }, payload) => {
   try {
-    if (state.hasFirestore) {
-      const ref = firebase.firestore().collection('users').doc(state.user.uid);
-
-      await ref.update({
-        twitterActive: true,
-        postDay: payload.postDay,
-      });
-    }
-
-    const ref = firebase.database().ref(`users/${state.user.uid}`);
+    const ref = firebase.firestore().collection('users').doc(state.user.uid);
 
     await ref.update({
       twitterActive: true,
@@ -75,30 +58,21 @@ const ACTION_LOGOUT_SPOTIFY = async ({ state, commit }) => {
 
   commit('SET_SPOTIFY_ACCESS_TOKEN', '');
 
-  if (state.hasFirestore) {
-    const firestoreRef = firebase.firestore().collection('users').doc(state.user.uid);
+  const firestoreRef = firebase.firestore().collection('users').doc(state.user.uid);
 
-    await firestoreRef.set(
-      {
-        credentials: {
-          spotify: {
-            accessToken: '',
-            refreshToken: '',
-          },
+  await firestoreRef.set(
+    {
+      credentials: {
+        spotify: {
+          accessToken: '',
+          refreshToken: '',
         },
       },
-      {
-        merge: true,
-      }
-    );
-  }
-
-  const ref = firebase.database().ref(`users/${state.user.uid}/credentials/spotify`);
-
-  return ref.update({
-    accessToken: '',
-    refreshToken: '',
-  });
+    },
+    {
+      merge: true,
+    }
+  );
 };
 
 export default {

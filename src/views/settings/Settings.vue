@@ -33,7 +33,6 @@
       <app-modal :title="currentItem.title" ref="modal">
         <component
           @close="closeModal()"
-          :database-ref="databaseRef"
           :is="currentItem.component"
           :firestore-ref="firestoreRef"
         />
@@ -65,7 +64,6 @@ export default {
     error: false,
     loading: true,
     currentItem: {},
-    databaseRef: null,
     firestoreRef: null,
     items: [
       {
@@ -99,7 +97,6 @@ export default {
       try {
         this.error = false;
         this.loading = true;
-        this.databaseRef = this.$firebase.database().ref(`users/${this.user.uid}`);
         this.firestoreRef = this.$firebase.firestore().collection('users').doc(this.user.uid);
 
         const snapshot = await this.firestoreRef.get();

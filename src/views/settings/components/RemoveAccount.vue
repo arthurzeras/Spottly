@@ -11,10 +11,6 @@
 <script>
 export default {
   props: {
-    databaseRef: {
-      required: true,
-    },
-
     firestoreRef: {
       required: true,
     },

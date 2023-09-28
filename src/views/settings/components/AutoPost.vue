@@ -59,10 +59,6 @@ export default {
   mixins: [WeekDays],
 
   props: {
-    databaseRef: {
-      required: true,
-    },
-
     firestoreRef: {
       required: false,
     },
@@ -121,8 +117,6 @@ export default {
           postDay: this.postDay,
           twitterActive: !this.updatingDay ? !this.active : true,
         };
-
-        await this.databaseRef.update(payload);
 
         if (this.firestoreRef) {
           await this.firestoreRef.update(payload);
